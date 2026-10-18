@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Little Teahouse — tea timer and tea guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#EBDFC8; --paper:#FFFBF2; --sheet:#FBF6EB; --parchment:#F4EAD6; --ink:#3A3930; --ink-soft:#626457;
+  --sage:#B9A98A; --sage-deep:#4C6A51; --sage-wash:#F3E7CB; --gold:#B48D4B; --gold-soft:#E2CF9F;
+  --blush:#E9AFA6; --blush-deep:#BF766E; --blush-wash:#F8E2DC; --accent:#EFB9B0; --accent-ink:#3D5A43;
+  --water:#F4E9D0; --line:#8A6B45; --error:#B0453B;
+  --sel-bg:#F8DCD6; --sel-ink:#2F4A35; --sel-line:#C47C74; --btn-bg:#A3524C; --btn-ink:#FFF8F0;
+  --f-bg:var(--paper); --f-line:var(--gold-soft); --f-ink:var(--ink); --f-soft:var(--ink-soft); --f-accent:var(--sage-deep); --f-track:var(--sage-wash); --f-gold:var(--gold); --f-ready:var(--blush-deep); --panel:var(--paper); --panel-line:var(--gold-soft);
+  --card-shadow:0 14px 30px -20px rgba(58,82,52,.55);
+  --tab-h:64px; --tab-gap:0px;
+  --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","Songti SC",Georgia,serif;
+  --round:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Nunito","Segoe UI",system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#1F2A22; --paper:#28322A; --sheet:#212A23; --parchment:#303B32; --ink:#EFE8D8; --ink-soft:#BAB3A0;
+    --sage:#C9B88F; --sage-deep:#EDE3CB; --sage-wash:#334036; --gold:#D7B673; --gold-soft:#5F5438;
+    --blush:#D69C94; --blush-deep:#EAB5AD; --blush-wash:#3D302E; --accent:#DDA098; --accent-ink:#1E2A21;
+    --water:#36423B; --line:#D8BF8C; --error:#F2A196;
+    --sel-bg:#4A3532; --sel-ink:#FBE9E4; --sel-line:#E0A49C; --btn-bg:#E3A59D; --btn-ink:#1B241D;
+    --f-bg:#E4D9C2; --f-line:#C2AD80; --f-ink:#2E3A2F; --f-soft:#59594A; --f-accent:#3F5A45; --f-track:#E3D5AF; --f-gold:#A67C32; --f-ready:#A3524C; --panel:#35423A; --panel-line:#80704A;
+    --card-shadow:0 14px 30px -18px rgba(0,0,0,.85);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#1F2A22; --paper:#28322A; --sheet:#212A23; --parchment:#303B32; --ink:#EFE8D8; --ink-soft:#BAB3A0;
+  --sage:#C9B88F; --sage-deep:#EDE3CB; --sage-wash:#334036; --gold:#D7B673; --gold-soft:#5F5438;
+  --blush:#D69C94; --blush-deep:#EAB5AD; --blush-wash:#3D302E; --accent:#DDA098; --accent-ink:#1E2A21;
+  --water:#36423B; --line:#D8BF8C; --error:#F2A196;
+  --sel-bg:#4A3532; --sel-ink:#FBE9E4; --sel-line:#E0A49C; --btn-bg:#E3A59D; --btn-ink:#1B241D;
+  --f-bg:#E4D9C2; --f-line:#C2AD80; --f-ink:#2E3A2F; --f-soft:#59594A; --f-accent:#3F5A45; --f-track:#E3D5AF; --f-gold:#A67C32; --f-ready:#A3524C; --panel:#35423A; --panel-line:#80704A;
+  --card-shadow:0 14px 30px -18px rgba(0,0,0,.85);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--round);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+svg{max-width:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:10px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[hidden]{display:none!important}
+
+.bough{position:fixed;pointer-events:none;z-index:0;opacity:.6;width:min(46vw,380px)}
+.bough.tr{top:0;right:0}
+.bough.bl{bottom:0;left:0;transform:rotate(180deg)}
+
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:28px 20px calc(var(--tab-h) + var(--tab-gap) + 64px + env(safe-area-inset-bottom,0px))}
+
+.top{display:flex;justify-content:flex-end}
+.toggle{display:inline-flex;background:var(--paper);border:1px solid var(--gold-soft);border-radius:999px;padding:3px}
+.toggle button{border:0;background:none;padding:5px 12px;border-radius:999px;font-size:.85rem;color:var(--ink-soft);min-height:32px}
+.toggle button[aria-pressed="true"]{background:var(--sel-bg);color:var(--sel-ink);box-shadow:inset 0 0 0 1.5px var(--sel-line);font-weight:700}
+.hero{text-align:center;padding:18px 0 8px}
+.hero h1{font-family:var(--serif);font-weight:600;font-size:clamp(2.2rem,6vw,3.4rem);letter-spacing:.04em;line-height:1.1;margin:6px 0 4px;color:var(--sage-deep)}
+.hero p{margin:0 auto;max-width:34em;color:var(--ink-soft)}
+.flourish{display:block;margin:0 auto;width:min(360px,80%);height:28px;color:var(--gold)}
+
+.controls{margin:26px 0 18px;display:flex;flex-direction:column;gap:14px;align-items:center}
+.search{position:relative;width:min(460px,100%)}
+.search input{width:100%;border:1px solid var(--gold-soft);background:var(--paper);color:var(--ink);border-radius:999px;padding:12px 18px 12px 44px;font:inherit;font-size:16px}
+.search input::placeholder{color:var(--ink-soft)}
+.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--sage)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{border:1px solid var(--gold-soft);background:var(--paper);padding:6px 15px;border-radius:999px;font-size:.92rem;color:var(--ink-soft);min-height:38px;transition:background .25s,color .25s}
+.chip[aria-pressed="true"]{background:var(--sel-bg);border:1.5px solid var(--sel-line);color:var(--sel-ink);font-weight:700}
+.countrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 18px}
+.count{color:var(--ink-soft);font-size:.9rem;margin:0}
+.addbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--gold-soft);background:var(--paper);border-radius:999px;padding:7px 15px;font-weight:700;color:var(--sage-deep);font-size:.9rem;min-height:40px}
+.addbtn svg{width:14px;height:14px}
+
+/* Cards: cream moon-gate arches with a pearl trim, set on the celadon page */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(184px,1fr));gap:22px 18px}
+.card{position:relative;background:var(--paper);border:1px solid var(--gold-soft);border-radius:110px 110px 20px 20px / 76px 76px 20px 20px;box-shadow:var(--card-shadow);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.card::before{content:"";position:absolute;inset:6px;border:2px dotted var(--gold-soft);border-radius:104px 104px 15px 15px / 70px 70px 15px 15px;pointer-events:none}
+.card:hover{transform:translateY(-3px)}
+/* Tea cards stay cream in light and dark mode */
+.card:not(.add){--paper:#FFFBF2;--parchment:#F4EAD6;--ink:#3A3930;--ink-soft:#626457;--sage-deep:#4C6A51;--sage-wash:#F3E7CB;--gold:#B48D4B;--gold-soft:#E2CF9F;--blush:#E9AFA6;--blush-deep:#BF766E;--line:#8A6B45;color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .card:not(.add){--paper:#E4D9C2;--parchment:#D9CBAE;--sage-wash:#F0E5C8;--gold-soft:#C2AD80}}
+:root[data-theme="dark"] .card:not(.add){--paper:#E4D9C2;--parchment:#D9CBAE;--sage-wash:#F0E5C8;--gold-soft:#C2AD80}
+.card-main{position:relative;display:block;width:100%;border:0;background:none;text-align:center;padding:20px 14px 18px;border-radius:inherit}
+.frame{width:108px;height:108px;margin:0 auto 6px;display:block}
+.card h3{font-family:var(--serif);font-weight:600;font-size:1.12rem;margin:0;line-height:1.3;color:var(--ink)}
+.card .native{display:block;color:var(--ink-soft);font-size:.82rem;margin-top:1px}
+.card .origin{display:block;color:var(--ink-soft);font-size:.82rem;margin:4px 0 10px}
+.pills{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;background:var(--sage-wash);color:var(--sage-deep);padding:3px 9px;border-radius:999px;font-weight:500}
+.pill svg{width:13px;height:13px}
+.liquor{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--liq);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.5);vertical-align:-1px}
+.fav{position:absolute;top:58px;right:12px;z-index:1;width:36px;height:36px;border-radius:50%;border:1px solid var(--gold-soft);background:var(--paper);display:grid;place-items:center;color:var(--blush-deep)}
+.fav svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+.fav[aria-pressed="true"] svg{fill:currentColor}
+.card.add{background:transparent;border:1.5px dashed var(--gold);box-shadow:none}
+.card.add::before{display:none}
+.card.add .card-main{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--sage-deep);padding:26px 14px}
+.card.add h3{color:var(--sage-deep)}
+.card.add p{margin:2px 0 0;font-size:.82rem;color:var(--ink-soft);max-width:14em}
+.empty{text-align:center;color:var(--ink-soft);padding:40px 0;grid-column:1/-1}
+
+/* Sheets */
+.scrim{position:fixed;inset:0;background:rgba(36,44,34,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:20;opacity:0;transition:opacity .35s ease}
+.scrim.show{opacity:1}
+.sheet{position:fixed;left:50%;bottom:0;width:min(720px,100%);max-height:calc(100% - 24px - env(safe-area-inset-top,0px));transform:translate(-50%,104%);transition:transform .5s cubic-bezier(.2,.85,.25,1);z-index:21;background:var(--sheet);border:1px solid var(--gold-soft);border-bottom:0;border-radius:28px 28px 0 0;overflow-y:auto;overscroll-behavior:contain;padding:0 0 calc(28px + env(safe-area-inset-bottom,0px))}
+.sheet.show{transform:translate(-50%,0)}
+.grab{position:relative;width:44px;height:5px;border-radius:9px;background:var(--gold-soft);margin:10px auto 0;touch-action:none}
+.grab::after{content:"";position:absolute;inset:-14px -60px}
+.sheet-head{display:flex;align-items:center;gap:14px;padding:22px 22px 6px;touch-action:pan-x}
+.sheet-head .frame{width:78px;height:78px;margin:0;flex:none}
+.sheet-head h2{font-family:var(--serif);font-weight:600;font-size:1.7rem;margin:0;line-height:1.15;color:var(--sage-deep)}
+.sheet-head .sub{color:var(--ink-soft);font-size:.92rem}
+.headbtns{margin-left:auto;align-self:flex-start;display:flex;gap:8px;flex:none}
+.close,.edit{height:40px;border-radius:999px;border:1px solid var(--gold-soft);background:var(--paper);display:grid;place-items:center}
+.close{width:40px}
+.edit{padding:0 14px;font-size:.9rem;font-weight:700;color:var(--sage-deep)}
+.close svg{width:16px;height:16px}
+
+.facts{display:grid;grid-template-columns:1fr 1.7fr 1fr;gap:8px;margin:12px 18px 0}
+.fact{background:var(--paper);border:1px solid var(--gold-soft);border-radius:16px;padding:9px 8px;text-align:center;display:flex;flex-direction:column;justify-content:center}
+.fact b{display:block;font-family:var(--serif);font-size:1.05rem;font-weight:600;line-height:1.3}
+.fact.water{background:var(--sage-wash);border-color:transparent}
+.fact.water b{font-size:1.3rem;color:var(--sage-deep)}
+.fact.leaf b{font-family:var(--round);font-size:.84rem;font-weight:700}
+.fact span{font-size:.76rem;color:var(--ink-soft)}
+
+.timer{margin:10px 18px 0;background:var(--paper);border:1px solid var(--gold-soft);border-radius:26px;padding:16px 16px 20px;text-align:center;position:relative;overflow:hidden}
+.dial{width:min(290px,78vw);height:auto;display:block;margin:0 auto}
+.ring-track{fill:none;stroke:var(--sage-wash);stroke-width:7}
+.ring{fill:none;stroke:var(--gold);stroke-width:7;stroke-linecap:round;transform:rotate(-90deg);transform-origin:150px 150px}
+.steam path{fill:none;stroke:var(--gold);stroke-width:2.2;stroke-linecap:round;opacity:0}
+.is-running .steam path{animation:steam 3.6s ease-in-out infinite}
+.is-running .steam path:nth-child(2){animation-delay:1.2s}
+.is-running .steam path:nth-child(3){animation-delay:2.4s}
+@keyframes steam{0%{opacity:0;transform:translateY(10px)}35%{opacity:.75}100%{opacity:0;transform:translateY(-16px)}}
+.leafy{transform-box:fill-box;transform-origin:center}
+.is-running .leafy{animation:drift 5s ease-in-out infinite}
+.is-running .leafy.b{animation-duration:6.5s;animation-direction:reverse}
+@keyframes drift{0%,100%{transform:rotate(-14deg) translateX(-2px)}50%{transform:rotate(16deg) translateX(3px)}}
+.is-done .cupgroup{animation:bob 1.6s ease-in-out 2}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.digits{font-family:var(--serif);font-size:clamp(2.6rem,10vw,3.4rem);font-weight:600;letter-spacing:.04em;line-height:1;margin:2px 0 4px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.status{color:var(--ink-soft);min-height:1.6em;font-size:.95rem}
+.is-done .status{color:var(--blush-deep);font-weight:700}
+.steeps{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:12px -12px 4px;padding:2px 12px}
+.steeps::-webkit-scrollbar{display:none}
+.steep:first-child{margin-left:auto}.steep:last-child{margin-right:auto}
+.steep{flex:none;min-height:38px;border:1px solid var(--gold-soft);background:none;border-radius:999px;padding:4px 14px;font-size:.84rem;color:var(--ink-soft)}
+.steep[aria-pressed="true"]{background:var(--sage-wash);border-color:var(--sage);color:var(--sage-deep);font-weight:700}
+.btns{display:flex;gap:10px;justify-content:center;align-items:center;margin-top:14px}
+.btn{border:0;border-radius:999px;padding:13px 30px;font-weight:700;font-size:1rem;background:var(--btn-bg);color:var(--btn-ink);min-width:170px;box-shadow:0 10px 22px -14px var(--btn-bg);transition:transform .2s,background .3s}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:var(--paper);color:var(--sage-deep);border:1px solid var(--gold-soft);min-width:0;padding:12px 20px;box-shadow:none}
+.note{font-size:.84rem;color:var(--ink-soft);margin:10px 0 0}
+
+.tabs{display:flex;gap:4px;margin:22px 18px 0;border-bottom:1px solid var(--gold-soft)}
+.tab{border:0;background:none;padding:10px 14px;font-size:.96rem;color:var(--ink-soft);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--sage-deep);border-color:var(--gold);font-weight:700}
+.panel{padding:16px 22px 4px;max-width:62ch}
+.panel h4{font-family:var(--serif);font-weight:600;font-size:1.06rem;margin:14px 0 6px;color:var(--sage-deep)}
+.panel h4:first-child{margin-top:4px}
+.panel p{margin:0 0 10px;line-height:1.75}
+.panel ol{margin:0;padding-left:1.3em}
+.panel li{margin-bottom:6px;line-height:1.65}
+.panel li::marker{color:var(--gold);font-family:var(--serif)}
+.pairs{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px}
+.pairs span{background:#EDBFB4;border:1.5px solid #C47C74;color:#3A2A26;font-weight:500;border-radius:999px;padding:4px 13px;font-size:.9rem}
+
+.dock{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:2;margin:18px 12px 0;display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--gold-soft);border-radius:999px;padding:6px 6px 6px 8px;box-shadow:0 16px 30px -18px rgba(0,0,0,.45);opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .3s,transform .35s cubic-bezier(.2,.85,.25,1)}
+.dock.show{opacity:1;transform:none;pointer-events:auto}
+.dock svg{width:38px;height:38px;flex:none}
+.dock-text{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.dock-text span{font-size:.8rem;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dock-text b{font-family:var(--serif);font-size:1.25rem;font-variant-numeric:tabular-nums}
+.dock .btn{min-width:0;padding:11px 20px;font-size:.95rem;flex:none;box-shadow:none}
+
+/* Add / edit form */
+.form{padding:8px 20px 0}
+.field{display:block;margin:0 0 18px;border:0;padding:0}
+.field>.lab{display:block;font-weight:700;font-size:.92rem;margin-bottom:6px;color:var(--sage-deep)}
+.field em{font-style:normal;font-weight:400;color:var(--ink-soft);font-size:.84rem}
+.field input,.field textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--gold-soft);border-radius:14px;padding:11px 14px}
+.field textarea{resize:vertical;min-height:90px;line-height:1.6}
+.field input::placeholder,.field textarea::placeholder{color:var(--ink-soft);opacity:.8}
+.typepick{display:flex;flex-wrap:wrap;gap:6px}
+.typepick button{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--gold-soft);background:var(--paper);border-radius:999px;padding:3px 13px 3px 4px;min-height:40px;font-size:.9rem;color:var(--ink-soft)}
+.typepick svg{width:30px;height:30px}
+.typepick button[aria-checked="true"]{background:var(--sel-bg);border:1.5px solid var(--sel-line);color:var(--sel-ink);font-weight:700}
+.steeprow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.steeprow .lbl{width:2.6em;color:var(--ink-soft);font-size:.9rem}
+.field .steeprow input{width:4.4em;text-align:center;padding:9px 6px}
+.steeprow .u{font-size:.88rem;color:var(--ink-soft)}
+.steeprow .rm{margin-left:auto;width:40px;height:40px;border-radius:50%;border:1px solid var(--gold-soft);background:var(--paper);display:grid;place-items:center;color:var(--ink-soft)}
+.steeprow .rm svg{width:12px;height:12px}
+.link{border:0;background:none;color:var(--blush-deep);font-weight:700;padding:8px 0;min-height:40px}
+.form-error{color:var(--error);min-height:1.4em;margin:0;font-size:.9rem;font-weight:700}
+.savednote{font-size:.82rem;color:var(--ink-soft);text-align:center;margin:12px 0 0}
+
+/* Mini timer */
+.mini{position:fixed;left:50%;bottom:calc(var(--tab-h) + var(--tab-gap) + 12px + env(safe-area-inset-bottom,0px));transform:translate(-50%,24px);opacity:0;pointer-events:none;z-index:15;display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--gold-soft);border-radius:999px;padding:7px 18px 7px 8px;box-shadow:0 16px 30px -18px rgba(0,0,0,.45);transition:transform .45s cubic-bezier(.2,.85,.25,1),opacity .3s}
+.mini.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+.mini svg{width:38px;height:38px}
+.mini b{font-family:var(--serif);font-variant-numeric:tabular-nums;font-size:1.1rem}
+.mini span{font-size:.88rem;color:var(--ink-soft)}
+.mini.ready{border-color:var(--blush)}
+.mini.ready b{color:var(--blush-deep)}
+
+/* Fields and buttons sit on their own cream surface, so they never blend into the green */
+.search input{background:var(--f-bg);border-color:var(--f-line);color:var(--f-ink)}
+.search input::placeholder{color:var(--f-soft)}
+.search svg{color:var(--f-accent)}
+.toggle{background:var(--f-bg);border-color:var(--f-line)}
+.toggle button{color:var(--f-soft)}
+.chip{background:var(--f-bg);border-color:var(--f-line);color:var(--f-soft)}
+.addbtn{background:var(--f-bg);border-color:var(--f-line);color:var(--f-accent)}
+.field input,.field textarea{background:var(--f-bg);border-color:var(--f-line);color:var(--f-ink)}
+.field input::placeholder,.field textarea::placeholder{color:var(--f-soft)}
+.typepick button{background:var(--f-bg);border-color:var(--f-line);color:var(--f-soft)}
+.typepick button:not([aria-checked="true"]){--line:#8A6B45;--parchment:#F4EAD6;--gold:#B48D4B;--blush:#E9AFA6;--sage:#B9A98A}
+.steep{background:var(--f-bg);border-color:var(--f-line);color:var(--f-soft)}
+.btn.ghost{background:var(--f-bg);border-color:var(--f-line);color:var(--f-accent)}
+.close,.edit{background:var(--f-bg);border-color:var(--f-line);color:var(--f-accent)}
+.steeprow .rm{background:var(--f-bg);border-color:var(--f-line);color:var(--f-soft)}
+.mini,.dock{background:var(--f-bg);border-color:var(--f-line);color:var(--f-ink)}
+.mini span,.dock-text span{color:var(--f-soft)}
+.mini span{white-space:nowrap;max-width:9.5em;overflow:hidden;text-overflow:ellipsis}
+.mini b,.dock-text b{color:var(--f-ink)}
+.mini.ready b{color:var(--f-ready)}
+.mini svg circle:first-child,.dock svg circle:first-child{stroke:var(--f-track)}
+.mini svg circle:last-child,.dock svg circle:last-child{stroke:var(--f-gold)}
+.timer,.fact{background:var(--panel);border-color:var(--panel-line)}
+.steep[aria-pressed="true"]{background:var(--sel-bg);border-color:var(--sel-line);color:var(--sel-ink);font-weight:700}
+.ring-track{stroke:var(--gold-soft);opacity:1}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .fact.water{background:var(--f-bg);border-color:var(--f-line)}
+  :root:not([data-theme="light"]) .fact.water b{color:var(--f-accent)}
+  :root:not([data-theme="light"]) .fact.water span{color:var(--f-soft)}
+}
+:root[data-theme="dark"] .fact.water{background:var(--f-bg);border-color:var(--f-line)}
+:root[data-theme="dark"] .fact.water b{color:var(--f-accent)}
+:root[data-theme="dark"] .fact.water span{color:var(--f-soft)}
+
+/* ---------- Bottom tab bar ---------- */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:16;display:flex;gap:2px;padding:7px 8px calc(7px + env(safe-area-inset-bottom,0px));background:var(--f-bg);border-top:1px solid var(--f-line);border-radius:24px 24px 0 0;box-shadow:0 -14px 28px -22px rgba(20,30,20,.6)}
+.tabitem{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--f-soft);padding:2px 0 0;min-height:50px;font-size:.72rem;font-weight:500;border-radius:16px;-webkit-tap-highlight-color:transparent}
+.tabitem .ico{position:relative;display:grid;place-items:center;width:60px;height:30px;border-radius:999px;transition:background .3s,box-shadow .3s,color .3s}
+.tabitem svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tabitem[aria-current="page"]{color:var(--f-ink);font-weight:700}
+.tabitem[aria-current="page"] .ico{background:var(--sel-bg);color:var(--sel-ink);box-shadow:inset 0 0 0 1.5px var(--sel-line)}
+.tlab{line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tabitem .dot{display:none;position:absolute;top:2px;right:12px;width:9px;height:9px;border-radius:50%;background:var(--f-ready);box-shadow:0 0 0 2px var(--f-bg)}
+.tabitem.live .dot{display:block}
+.tabitem.ready .dot{animation:pulse 1.3s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.4)}}
+@media (min-width:700px){
+  :root{--tab-gap:16px}
+  .tabbar{left:50%;right:auto;width:min(460px,calc(100% - 24px));transform:translateX(-50%);bottom:var(--tab-gap);border:1px solid var(--f-line);border-radius:28px;box-shadow:0 18px 36px -20px rgba(0,0,0,.55)}
+}
+
+/* ---------- Page headers, timer page, empty states ---------- */
+.pagehead{text-align:center;padding:8px 0 4px;margin-bottom:16px}
+.pagehead .flourish{width:min(260px,70%);height:22px}
+.pagehead h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.8rem,5vw,2.4rem);letter-spacing:.04em;line-height:1.15;margin:4px 0 2px;color:var(--sage-deep)}
+.pagehead p{margin:0 auto;max-width:30em;color:var(--ink-soft);font-size:.95rem}
+.pagehead .addbtn{margin-top:14px}
+.hub{max-width:460px;margin:0 auto}
+.hubhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 4px}
+.hubhead h3{font-family:var(--serif);font-weight:600;font-size:1.35rem;line-height:1.2;margin:0;color:var(--sage-deep)}
+.hubhead p{margin:0;color:var(--ink-soft);font-size:.86rem}
+.hubhead .edit{flex:none;white-space:nowrap}
+.hub .timer{margin:12px 0 0}
+.hub .dial{width:min(270px,72vw,36vh)}
+@media (max-height:720px){.hub .dial{width:min(270px,72vw,31vh)}.pagehead .flourish,.pagehead p{display:none}.pagehead{margin-bottom:8px;padding-top:0}}
+.hubchange{display:block;width:100%;margin:10px 0 0;flex:none}
+.hubback{display:inline-flex;align-items:center;border:1px solid var(--f-line);background:var(--f-bg);color:var(--f-accent);border-radius:999px;padding:6px 15px;font-weight:700;font-size:.88rem;min-height:38px;margin:0 0 10px 2px}
+.cupfig{width:min(210px,58vw);height:auto;display:block;margin:6px auto 0}
+.hubempty{text-align:center}
+.hubempty h3{font-family:var(--serif);font-weight:600;font-size:1.35rem;margin:6px 0 2px;color:var(--sage-deep)}
+.hubempty>p{margin:0 0 6px;color:var(--ink-soft);font-size:.92rem}
+.hubempty .addbtn{margin:0 auto}
+.qbtitle{font-family:var(--serif);font-weight:600;font-size:1.02rem;text-align:left;margin:20px 4px 8px;color:var(--sage-deep)}
+.qbgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;margin-bottom:18px}
+.qb{display:flex;align-items:center;gap:8px;min-width:0;background:var(--paper);border:1px solid var(--gold-soft);border-radius:18px;padding:8px 10px 8px 6px;box-shadow:var(--card-shadow);text-align:left;min-height:64px;color:var(--ink)}
+.qb svg{width:48px;height:48px;flex:none}
+.qbt{min-width:0}
+.qbt b{display:block;font-family:var(--serif);font-weight:600;font-size:.96rem;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qbt i{display:block;font-style:normal;font-size:.76rem;color:var(--ink-soft);white-space:nowrap}
+.qb{--paper:#FFFBF2;--parchment:#F4EAD6;--ink:#3A3930;--ink-soft:#626457;--sage-deep:#4C6A51;--sage-wash:#F3E7CB;--gold:#B48D4B;--gold-soft:#E2CF9F;--blush:#E9AFA6;--line:#8A6B45}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .qb{--paper:#E4D9C2;--parchment:#D9CBAE;--sage-wash:#F0E5C8;--gold-soft:#C2AD80}}
+:root[data-theme="dark"] .qb{--paper:#E4D9C2;--parchment:#D9CBAE;--sage-wash:#F0E5C8;--gold-soft:#C2AD80}
+.empty h3{font-family:var(--serif);font-weight:600;font-size:1.25rem;margin:0 0 4px;color:var(--sage-deep)}
+.empty p{margin:0 0 14px}
+.eico{width:60px;height:60px;display:block;margin:0 auto 8px;fill:none;stroke:var(--gold);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round}
+.wrap.swap>*{animation:fadeUp .4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* Selected tea sheet and the timer card: parchment surfaces in dark mode, so panels never sit green on green */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) #sheet,:root:not([data-theme="light"]) .hub .timer{--sheet:#E8DEC7;--paper:#F8F2E4;--parchment:#F0E7D2;--ink:#3A3930;--ink-soft:#5E6052;--sage:#C9B88F;--sage-deep:#43614A;--sage-wash:#F3E7CB;--gold:#B08A48;--gold-soft:#D3BF8E;--blush:#E9AFA6;--blush-deep:#B5675F;--blush-wash:#F3DDD6;--water:#F4E9D0;--line:#8A6B45;--sel-bg:#F4D3CC;--sel-ink:#2F4A35;--sel-line:#C47C74;--btn-bg:#A3524C;--btn-ink:#FFF8F0;--f-bg:#F1E9D6;--f-line:#C9B483;--f-ink:#33392F;--f-soft:#5A5C4C;--f-accent:#43614A;--f-track:#EADDB9;--f-gold:#B08A48;--f-ready:#A3524C;--panel:#F8F2E4;--panel-line:#CDB98A;color:var(--ink)}
+}
+:root[data-theme="dark"] #sheet,:root[data-theme="dark"] .hub .timer{--sheet:#E8DEC7;--paper:#F8F2E4;--parchment:#F0E7D2;--ink:#3A3930;--ink-soft:#5E6052;--sage:#C9B88F;--sage-deep:#43614A;--sage-wash:#F3E7CB;--gold:#B08A48;--gold-soft:#D3BF8E;--blush:#E9AFA6;--blush-deep:#B5675F;--blush-wash:#F3DDD6;--water:#F4E9D0;--line:#8A6B45;--sel-bg:#F4D3CC;--sel-ink:#2F4A35;--sel-line:#C47C74;--btn-bg:#A3524C;--btn-ink:#FFF8F0;--f-bg:#F1E9D6;--f-line:#C9B483;--f-ink:#33392F;--f-soft:#5A5C4C;--f-accent:#43614A;--f-track:#EADDB9;--f-gold:#B08A48;--f-ready:#A3524C;--panel:#F8F2E4;--panel-line:#CDB98A;color:var(--ink)}
+#sheet .fact.water{background:#E9C47C;border:1.5px solid #A27C36}
+#sheet .fact.water b{color:#33280F}
+#sheet .fact.water span{color:#54421C}
+.fact.water b.long{font-size:1.02rem;white-space:nowrap}
+
+/* Warm tints inside the parchment sheet and timer card (no cool greens) */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) #sheet,:root:not([data-theme="light"]) .hub .timer{--sage-wash:#F3E7CB;--water:#F4E9D0;--f-track:#EADDB9}
+}
+:root[data-theme="dark"] #sheet,:root[data-theme="dark"] .hub .timer{--sage-wash:#F3E7CB;--water:#F4E9D0;--f-track:#EADDB9}
+
+.is-running .teaart{animation:artfloat 5s ease-in-out infinite}
+@keyframes artfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+/* Floating timer pill: deep rose so it stands out over the cream tea cards */
+.mini{background:#A3524C;border:1.5px solid #F3E4C8;color:#FFF8F0;box-shadow:0 14px 28px -10px rgba(40,18,14,.7)}
+.mini span{color:#F6E6DA}
+.mini b{color:#FFF8F0}
+.mini.ready{border-color:#FFE7A8}
+.mini.ready b{color:#FFF8F0}
+.mini svg circle:first-child{stroke:rgba(255,248,240,.3)}
+.mini svg circle:last-child{stroke:#F6D88F}
+
+/* Phone layout */
+@media (max-width:600px){
+  .wrap{padding:14px 14px calc(var(--tab-h) + 56px + env(safe-area-inset-bottom,0px))}
+  .hero{padding:2px 0 0}
+  .hero h1{font-size:2.05rem}
+  .hero p{font-size:.9rem;max-width:25em;line-height:1.5}
+  .flourish{height:20px}
+  .controls{margin:16px 0 12px;gap:10px}
+  .search input{padding:11px 16px 11px 42px}
+  .chips{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;width:calc(100% + 28px);margin:0 -14px;padding:2px 14px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;min-height:40px;padding:7px 16px}
+  .countrow{margin:0 0 12px}
+  .count{font-size:.84rem}
+  .grid{grid-template-columns:1fr 1fr;gap:14px 12px}
+  .card{border-radius:80px 80px 16px 16px / 56px 56px 16px 16px}
+  .card::before{inset:5px;border-radius:75px 75px 12px 12px / 51px 51px 12px 12px}
+  .card-main{padding:14px 8px 14px}
+  .frame{width:84px;height:84px}
+  .card h3{font-size:1rem}
+  .card .native{font-size:.76rem}
+  .card .origin{font-size:.74rem;margin:2px 0 8px;line-height:1.35}
+  .pills{gap:4px}
+  .pill{font-size:.74rem;padding:2px 7px}
+  .fav{top:42px;right:7px;width:34px;height:34px}
+
+  .sheet-head{padding:12px 14px 2px;gap:12px}
+  .sheet-head .frame{width:60px;height:60px}
+  .sheet-head h2{font-size:1.4rem}
+  .sheet-head .sub{font-size:.82rem;line-height:1.4}
+  .close{width:44px;height:44px}
+  .edit{height:44px}
+  .facts{margin:10px 12px 0;gap:6px}
+  .timer{margin:8px 12px 0;padding:10px 12px 16px}
+  .dial{width:min(210px,56vw)}
+  .digits{font-size:2.5rem}
+  .status{font-size:.88rem}
+  .steeps{gap:5px}
+  .steep{padding:4px 10px;font-size:.8rem}
+  .btns{gap:8px}
+  .btn{flex:1;min-width:0;padding:14px 20px}
+  .btn.ghost{flex:none;padding:13px 18px}
+  .tabs{margin:18px 12px 0}
+  .tab{flex:1;padding:12px 4px;font-size:.9rem;white-space:nowrap}
+  .panel{padding:14px 16px 4px}
+  .form{padding:6px 16px 0}
+}
+
+.petal{position:fixed;top:-30px;z-index:40;width:14px;height:14px;border-radius:80% 0 80% 0;background:linear-gradient(135deg,var(--blush-wash),var(--blush));pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translate(var(--dx),110vh) rotate(var(--rot));opacity:.2}}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+  .petal{display:none}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="cupSrc">
+        <g class="steam"><path d="M132 124 C124 112 140 104 132 92 C125 82 138 74 132 66"/><path d="M150 120 C142 108 158 100 150 88 C143 78 156 70 150 62"/><path d="M168 124 C160 112 176 104 168 92 C161 82 174 74 168 66"/></g>
+        <ellipse cx="150" cy="218" rx="74" ry="12" fill="var(--parchment)" stroke="var(--gold)" stroke-width="1.4"/>
+        <ellipse cx="150" cy="216" rx="44" ry="6" fill="none" stroke="var(--gold-soft)" stroke-width="1"/>
+        <path d="M206 160 C230 156 232 188 204 190" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round"/>
+        <path d="M206 160 C230 156 232 188 204 190" fill="none" stroke="var(--paper)" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M92 146 C92 190 116 212 150 212 C184 212 208 190 208 146 Z" fill="var(--paper)" stroke="var(--gold)" stroke-width="1.6"/>
+        <path d="M98 172 Q150 190 202 172" fill="none" stroke="var(--gold-soft)" stroke-width="1.5"/>
+        <use href="#blossom" x="112" y="176" width="18" height="18"/><use href="#blossom" x="128" y="186" width="12" height="12"/>
+        <path d="M140 192 C150 188 158 190 166 186" fill="none" stroke="var(--gold)" stroke-width="1.2"/>
+        <ellipse cx="150" cy="146" rx="58" ry="12" fill="var(--paper)" stroke="var(--gold)" stroke-width="1.6"/>
+        <ellipse cx="150" cy="148" rx="51" ry="8.5" fill="var(--water)"/>
+        <ellipse id="liquor" cx="150" cy="148" rx="51" ry="8.5" fill="#B9C46A" opacity=".12"/>
+        <path class="leafy" d="M128 147 C132 142 140 142 143 147 C139 151 132 151 128 147Z" fill="#9C7A3C" opacity=".9"/>
+        <path class="leafy b" d="M158 149 C162 145 169 145 172 149 C168 153 162 153 158 149Z" fill="#B38E4A" opacity=".9"/>
+      </g>
+    <symbol id="blossom" viewBox="-10 -10 20 20">
+      <g fill="var(--blush)">
+        <ellipse cx="0" cy="-5" rx="3.6" ry="4.6"/>
+        <ellipse cx="0" cy="-5" rx="3.6" ry="4.6" transform="rotate(72)"/>
+        <ellipse cx="0" cy="-5" rx="3.6" ry="4.6" transform="rotate(144)"/>
+        <ellipse cx="0" cy="-5" rx="3.6" ry="4.6" transform="rotate(216)"/>
+        <ellipse cx="0" cy="-5" rx="3.6" ry="4.6" transform="rotate(288)"/>
+      </g>
+      <circle r="1.8" fill="var(--gold)"/>
+      <g fill="var(--gold)"><circle cx="0" cy="-3.2" r=".6"/><circle cx="3" cy="-1" r=".6"/><circle cx="1.9" cy="2.6" r=".6"/><circle cx="-1.9" cy="2.6" r=".6"/><circle cx="-3" cy="-1" r=".6"/></g>
+    </symbol>
+    <clipPath id="qclip"><path d="M50 9 C61 9 69 17 69 28 C80 28 91 38 91 50 C91 62 80 72 69 72 C69 83 61 91 50 91 C39 91 31 83 31 72 C20 72 9 62 9 50 C9 38 20 28 31 28 C31 17 39 9 50 9Z"/></clipPath>
+    <symbol id="quatre" viewBox="0 0 100 100">
+      <path d="M50 9 C61 9 69 17 69 28 C80 28 91 38 91 50 C91 62 80 72 69 72 C69 83 61 91 50 91 C39 91 31 83 31 72 C20 72 9 62 9 50 C9 38 20 28 31 28 C31 17 39 9 50 9Z" fill="var(--parchment)" stroke="var(--gold)" stroke-width="1.4"/>
+      <path d="M50 14 C59 14 64 21 64 32 C76 32 86 40 86 50 C86 60 76 68 64 68 C64 79 59 86 50 86 C41 86 36 79 36 68 C24 68 14 60 14 50 C14 40 24 32 36 32 C36 21 41 14 50 14Z" fill="none" stroke="var(--gold-soft)" stroke-width=".8" stroke-dasharray="0 3.2" stroke-linecap="round"/>
+      <path d="M50 1 L53 5 L50 9 L47 5Z M50 91 L53 95 L50 99 L47 95Z M91 50 L95 47 L99 50 L95 53Z M9 50 L5 53 L1 50 L5 47Z" fill="var(--gold)"/>
+    </symbol>
+    <symbol id="i-temp" viewBox="0 0 16 16"><path d="M8 2.2a1.6 1.6 0 0 1 1.6 1.6v5.4a3 3 0 1 1-3.2 0V3.8A1.6 1.6 0 0 1 8 2.2z" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="11.6" r="1.3" fill="currentColor"/></symbol>
+    <symbol id="i-time" viewBox="0 0 16 16"><path d="M4 2h8M4 14h8M5 2c0 3 6 3.5 6 6s-6 3-6 6M11 2c0 3-6 3.5-6 6s6 3 6 6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 16 16"><path d="M3 3 L13 13 M13 3 L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-tab-leaf" viewBox="0 0 24 24"><path d="M5 19C4.5 10.5 9.5 5 19 4.5 19.5 14 14 19.5 5 19z"/><path d="M5 19l8.5-8.5"/><path d="M9.5 15.2c1.800.2 3.700-.4 4.900-1.700"/></symbol>
+    <symbol id="i-tab-timer" viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M9.5 3h5M12 3v3M18.200 7l1.200-1.200"/></symbol>
+    <symbol id="i-tab-heart" viewBox="0 0 24 24"><path d="M12 20s-7.500-4.600-7.500-10.200A4.200 4.200 0 0 1 12 7.300a4.200 4.200 0 0 1 7.500 2.500C19.500 15.400 12 20 12 20z"/></symbol>
+    <symbol id="i-tab-pot" viewBox="0 0 24 24"><path d="M5.500 11.500h11v3.500a4 4 0 0 1-4 4h-3a4 4 0 0 1-4-4z"/><path d="M16.500 12.500h1.200a2.200 2.200 0 0 1 0 4.400h-1.800"/><path d="M5.500 12.500L3 10.800"/><path d="M8.500 11.500V10h5v1.500"/><path d="M11 10V8.500"/></symbol>
+  </defs>
+</svg>
+<!-- Hand-drawn tea illustrations are generated into this sprite at load -->
+<svg id="illos" width="0" height="0" style="position:absolute" aria-hidden="true"></svg>
+
+<svg class="bough tr" viewBox="0 0 380 260" aria-hidden="true">
+  <path d="M380 18 C320 30 270 52 230 86 C200 112 168 124 128 128 M262 62 C250 40 232 30 212 26 M214 98 C214 130 230 152 252 168 M300 40 C306 70 322 90 346 100" fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round" opacity=".8"/>
+  <use href="#blossom" x="118" y="116" width="24" height="24"/><use href="#blossom" x="200" y="16" width="20" height="20"/>
+  <use href="#blossom" x="244" y="160" width="22" height="22"/><use href="#blossom" x="336" y="92" width="22" height="22"/>
+  <use href="#blossom" x="176" y="112" width="16" height="16"/><use href="#blossom" x="282" y="38" width="16" height="16"/>
+  <circle cx="226" cy="140" r="3" fill="var(--blush)"/><circle cx="158" cy="120" r="2.5" fill="var(--blush)"/><circle cx="320" cy="72" r="2.5" fill="var(--blush)"/>
+</svg>
+<svg class="bough bl" viewBox="0 0 380 260" aria-hidden="true">
+  <path d="M380 22 C330 40 290 60 250 96 C222 120 190 132 150 134 M290 58 C282 40 266 32 246 30" fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round" opacity=".8"/>
+  <use href="#blossom" x="140" y="122" width="22" height="22"/><use href="#blossom" x="236" y="20" width="18" height="18"/><use href="#blossom" x="198" y="112" width="16" height="16"/>
+</svg>
+
+<main class="wrap">
+  <div class="top">
+    <div class="toggle" role="group" aria-label="Temperature unit">
+      <button type="button" data-unit="C" aria-pressed="true">°C</button>
+      <button type="button" data-unit="F" aria-pressed="false">°F</button>
+    </div>
+  </div>
+  <div id="pTeas">
+  <header class="hero">
+    <svg class="flourish" viewBox="0 0 360 28" aria-hidden="true">
+      <path d="M10 14 H140 M220 14 H350" stroke="currentColor" stroke-width="1"/>
+      <path d="M140 14 C150 4 160 4 166 14 C160 24 150 24 140 14Z M220 14 C210 4 200 4 194 14 C200 24 210 24 220 14Z" fill="none" stroke="currentColor" stroke-width="1"/>
+      <path d="M128 14 L132 10 L136 14 L132 18Z M224 14 L228 10 L232 14 L228 18Z" fill="currentColor"/>
+      <use href="#blossom" x="168" y="2" width="24" height="24"/>
+    </svg>
+    <h1>Little Teahouse</h1>
+    <p>Choose a tea and we’ll tell you the right water, the right leaf, and keep the minutes for you.</p>
+  </header>
+
+  <section class="controls" aria-label="Find a tea">
+    <label class="search">
+      <span class="sr">Search teas</span>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.5 13.5 L18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <input id="q" type="search" placeholder="Search by name, origin or flavor" autocomplete="off">
+    </label>
+    <div class="chips" id="chips" role="group" aria-label="Tea type"></div>
+  </section>
+  <div class="countrow">
+    <p class="count" id="count" aria-live="polite"></p>
+  </div>
+  </div>
+
+  <header class="pagehead" id="pHead" hidden>
+    <svg class="flourish" viewBox="0 0 360 28" aria-hidden="true"><path d="M10 14 H140 M220 14 H350" stroke="currentColor" stroke-width="1"/><path d="M140 14 C150 4 160 4 166 14 C160 24 150 24 140 14Z M220 14 C210 4 200 4 194 14 C200 24 210 24 220 14Z" fill="none" stroke="currentColor" stroke-width="1"/><path d="M128 14 L132 10 L136 14 L132 18Z M224 14 L228 10 L232 14 L228 18Z" fill="currentColor"/><use href="#blossom" x="168" y="2" width="24" height="24"/></svg>
+    <h2 id="pTitle"></h2>
+    <p id="pSub"></p>
+    <button type="button" class="addbtn" id="addBtn" hidden><svg aria-hidden="true"><use href="#i-plus"/></svg>Add your own tea</button>
+  </header>
+
+  <section class="hub" id="pTimer" hidden aria-label="Timer">
+    <div id="hubActive" hidden>
+      <button type="button" class="hubback" id="hubBack" hidden>‹ Timer home</button>
+      <div class="hubhead"><div><h3 id="hubName"></h3><p id="hubSub"></p></div><button type="button" class="edit" id="hubGuide">Brew guide</button></div>
+      <button type="button" class="btn ghost hubchange" id="hubChange" hidden>Choose a different tea</button>
+    </div>
+    <div id="hubEmpty" class="hubempty">
+      <svg class="cupfig is-running" id="cupfig" viewBox="60 50 180 190" aria-hidden="true"></svg>
+      <h3>What are we brewing?</h3>
+      <p>Pick a tea and the water and timer are set for you.</p>
+      <div class="qbtitle">Quick brew</div>
+      <div class="qbgrid" id="qbGrid"></div>
+      <button type="button" class="addbtn" id="hubBrowse">Browse all teas</button>
+    </div>
+  </section>
+  <section class="grid" id="grid" aria-label="Teas"></section>
+</main>
+
+<nav class="tabbar" id="tabbar" aria-label="Main">
+  <button type="button" class="tabitem" data-tab="teas" aria-current="page"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-tab-leaf"/></svg></span><span class="tlab">Teas</span></button>
+  <button type="button" class="tabitem" data-tab="timer"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-tab-timer"/></svg><i class="dot"></i></span><span class="tlab">Timer</span></button>
+  <button type="button" class="tabitem" data-tab="saved"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-tab-heart"/></svg></span><span class="tlab">Saved</span></button>
+  <button type="button" class="tabitem" data-tab="mine"><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-tab-pot"/></svg></span><span class="tlab">My teas</span></button>
+</nav>
+
+<button type="button" class="mini" id="mini" aria-label="Open running timer" tabindex="-1">
+  <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="none" stroke="var(--sage-wash)" stroke-width="4"/><circle id="miniRing" cx="20" cy="20" r="16" fill="none" stroke="var(--gold)" stroke-width="4" stroke-linecap="round" transform="rotate(-90 20 20)" stroke-dasharray="100.53" stroke-dashoffset="100.53"/></svg>
+  <span id="miniName"></span><b id="miniTime">0:00</b>
+</button>
+
+<div class="scrim" id="scrim" hidden></div>
+
+<!-- Tea sheet -->
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head">
+    <div>
+      <h2 id="sheetTitle"></h2>
+      <div class="sub" id="sheetSub"></div>
+    </div>
+    <div class="headbtns">
+      <button type="button" class="edit" id="editBtn" hidden>Edit</button>
+      <button type="button" class="close" id="close" aria-label="Close"><svg><use href="#i-x"/></svg></button>
+    </div>
+  </div>
+
+  <div class="facts" id="facts"></div>
+
+  <div class="timer" id="timer">
+    <svg class="dial" id="dial" viewBox="0 0 300 300" role="img" aria-label="Brewing progress">
+      <circle cx="150" cy="150" r="142" fill="none" stroke="var(--gold-soft)" stroke-width="3" stroke-dasharray="0 8" stroke-linecap="round"/>
+      <circle cx="150" cy="150" r="136" fill="none" stroke="var(--gold)" stroke-width=".8"/>
+      <circle class="ring-track" cx="150" cy="150" r="124"/>
+      <circle class="ring" id="ring" cx="150" cy="150" r="124"/>
+      <circle id="bead" cx="150" cy="26" r="6" fill="var(--paper)" stroke="var(--gold)" stroke-width="2"/>
+      <path d="M150 2 L155 8 L150 14 L145 8Z M150 286 L155 292 L150 298 L145 292Z M2 150 L8 145 L14 150 L8 155Z M286 150 L292 145 L298 150 L292 155Z" fill="var(--gold)"/>
+      <g class="cupgroup">
+        <g class="steam"><path d="M128 76 C121 66 135 60 128 50 C123 44 132 41 128 38"/><path d="M150 73 C143 63 157 57 150 49 C146 44 153 42 150 40"/><path d="M172 76 C165 66 179 60 172 50 C167 44 176 41 172 38"/></g>
+        <g class="teaart"><svg x="58" y="58" width="184" height="184" viewBox="0 0 100 100" overflow="visible"><use href="#quatre"/><use id="dialArt" href="#t-sencha" x="6" y="6" width="88" height="88" clip-path="url(#qclip)"/></svg></g>
+      </g>
+    </svg>
+    <div class="digits" id="digits">0:00</div>
+    <div class="status" id="status" aria-live="polite"></div>
+    <div class="steeps" id="steeps" role="group" aria-label="Choose a steep"></div>
+    <div class="btns">
+      <button type="button" class="btn ghost" id="reset">Reset</button>
+      <button type="button" class="btn" id="primary">Start</button>
+    </div>
+    <p class="note" id="note" hidden></p>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="About this tea">
+    <button class="tab" role="tab" id="tab-brew" aria-controls="panel" aria-selected="true" data-tab="brew">Brew guide</button>
+    <button class="tab" role="tab" id="tab-enjoy" aria-controls="panel" aria-selected="false" data-tab="enjoy" tabindex="-1">Enjoy and pair</button>
+    <button class="tab" role="tab" id="tab-story" aria-controls="panel" aria-selected="false" data-tab="story" tabindex="-1">Story</button>
+  </div>
+  <div class="panel" id="panel" role="tabpanel"></div>
+
+  <div class="dock" id="dock" aria-hidden="true">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="none" stroke="var(--sage-wash)" stroke-width="4"/><circle id="dockRing" cx="20" cy="20" r="16" fill="none" stroke="var(--gold)" stroke-width="4" stroke-linecap="round" transform="rotate(-90 20 20)" stroke-dasharray="100.53" stroke-dashoffset="100.53"/></svg>
+    <span class="dock-text"><span id="dockLabel"></span><b id="dockTime">0:00</b></span>
+    <button type="button" class="btn" id="dockBtn" tabindex="-1">Start</button>
+  </div>
+</section>
+
+<!-- Add / edit tea sheet -->
+<section class="sheet" id="formSheet" role="dialog" aria-modal="true" aria-labelledby="formTitle" hidden>
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-head">
+    <svg class="frame" viewBox="0 0 100 100" aria-hidden="true"><use href="#quatre"/><use id="formArt" href="#m-green" x="6" y="6" width="88" height="88" clip-path="url(#qclip)"/></svg>
+    <div>
+      <h2 id="formTitle">Add your own tea</h2>
+      <div class="sub" id="formSub">Set it up once and the timer remembers it.</div>
+    </div>
+    <div class="headbtns"><button type="button" class="close" id="formClose" aria-label="Close"><svg><use href="#i-x"/></svg></button></div>
+  </div>
+  <form class="form" id="teaForm" novalidate>
+    <label class="field"><span class="lab">Name</span><input id="fName" maxlength="40" autocomplete="off" placeholder="Grandma’s jasmine"></label>
+    <fieldset class="field"><legend class="lab">Type</legend><div class="typepick" id="fType" role="radiogroup" aria-label="Type"></div></fieldset>
+    <label class="field"><span class="lab">Water temperature (<span id="fUnit">°C</span>)</span><input id="fTemp" type="number" inputmode="numeric"></label>
+    <div class="field"><span class="lab" id="steepsLab">Steep times</span><div id="fSteeps" role="group" aria-labelledby="steepsLab"></div><button type="button" class="link" id="fAddSteep">+ Add another steep</button></div>
+    <label class="field"><span class="lab">Leaf amount <em>(optional)</em></span><input id="fLeaf" maxlength="60" autocomplete="off" placeholder="1 tsp per 250 ml"></label>
+    <label class="field"><span class="lab">Notes <em>(optional)</em></span><textarea id="fNotes" rows="3" maxlength="600" placeholder="Where it’s from, how you like it, what you pair it with"></textarea></label>
+    <p class="form-error" id="fErr" role="alert"></p>
+    <div class="btns">
+      <button type="button" class="btn ghost" id="fDelete" hidden>Delete</button>
+      <button type="submit" class="btn" id="fSave">Save tea</button>
+    </div>
+    <p class="savednote" id="savedNote">Your teas are saved to this browser.</p>
+  </form>
+</section>
+
+<script>
+/* ================= Tea data ================= */
+const LEAF = {
+  green:"1 tsp (2–3 g) per 250 ml", black:"1 tsp (2–3 g) per 250 ml", white:"2 tbsp (3 g) per 250 ml",
+  oolong:"1 tbsp (3–4 g) per 250 ml", puerh:"4 g per 250 ml", herbal:"1 tbsp (2 g) per 250 ml", blend:"1 tsp (2–3 g) per 250 ml"
+};
+const CATS = [
+  {id:"all",label:"All teas"},{id:"green",label:"Green"},{id:"black",label:"Black"},{id:"white",label:"White"},
+  {id:"oolong",label:"Oolong"},{id:"puerh",label:"Pu-erh"},{id:"herbal",label:"Herbal"},{id:"blend",label:"Blends"}
+];
+const TYPES = ["green","black","white","oolong","puerh","herbal","blend"];
+const CAT_LABEL = {green:"Green tea",black:"Black tea",white:"White tea",oolong:"Oolong",puerh:"Pu-erh",herbal:"Herbal",blend:"Blend"};
+const TYPE_SHORT = {green:"Green",black:"Black",white:"White",oolong:"Oolong",puerh:"Pu-erh",herbal:"Herbal",blend:"Blend"};
+const CAT_DEFAULT = {green:{t:80,s:120},black:{t:100,s:240},white:{t:85,s:240},oolong:{t:95,s:150},puerh:{t:100,s:150},herbal:{t:100,s:300},blend:{t:95,s:240}};
+const CAT_LIQ = {green:"#C3C870",black:"#9A4520",white:"#E3D49A",oolong:"#D2B060",puerh:"#5A2814",herbal:"#D9A64A",blend:"#A8582A"};
+const CAT_CAFF = {green:"Medium",black:"High",white:"Low",oolong:"Medium",puerh:"Medium",herbal:"None",blend:"Varies"};
+
+const TEAS = [
+ {id:"sencha",name:"Sencha",native:"煎茶",cat:"green",origin:"Shizuoka, Japan",temp:75,steeps:[60,30,60],caffeine:"Medium",liquor:"#B9C46A",
+  flavor:"Grassy, bright and gently sweet with a savory finish.",
+  tips:["Keep the water well below boiling — hotter water turns sencha bitter.","Pour out every last drop so the next steep stays fresh."],
+  enjoy:"Drink it plain, never with milk. The second steep is often sweeter than the first.",
+  pair:["Onigiri","Sashimi","Mochi","Cucumber salad"],
+  story:"Sencha is Japan’s everyday tea. In 1738 Nagatani Sōen of Uji refined the method of steaming and rolling fresh leaves, which keeps them vivid green. Today most of the tea grown in Japan becomes sencha."},
+ {id:"gyokuro",name:"Gyokuro",native:"玉露",cat:"green",origin:"Uji and Yame, Japan",temp:60,steeps:[120,60,90],caffeine:"High",liquor:"#C8D47C",leaf:"2 tsp (5 g) per 150 ml",
+  flavor:"Deep umami, like a sweet sea-breeze broth.",
+  tips:["Use more leaf and less water than usual; a small pot brings out the umami.","Let boiled water cool for several minutes before pouring."],
+  enjoy:"Sip slowly from a small cup, almost like a broth. After the last steep, the soft leaves can be eaten with a little ponzu.",
+  pair:["Wagashi","Sea bream sashimi","Chawanmushi"],
+  story:"Gyokuro means “jade dew.” The bushes are shaded for about three weeks before harvest, which raises amino acids like L-theanine and softens bitterness. The style took shape in Uji in the 1830s and is still among Japan’s most prized teas."},
+ {id:"matcha",name:"Matcha",native:"抹茶",cat:"green",origin:"Uji and Nishio, Japan",temp:80,steeps:[30],caffeine:"High",liquor:"#7FA34A",leaf:"2 g (1 tsp) per 70 ml",action:"Whisk",
+  flavor:"Velvety, vegetal and sweet with a gentle bitterness.",
+  steps:["Sift 2 g (about 1 tsp) of matcha into a warmed bowl.","Add 70 ml of water heated to the temperature above.","Whisk briskly in a W motion until a fine foam forms — the timer counts it for you.","Drink right away, before the powder settles."],
+  enjoy:"Drink it in a few sips straight from the bowl. For a latte, whisk with a splash of water first, then top with steamed milk.",
+  pair:["Wagashi","White chocolate","Strawberries","Butter cookies"],
+  story:"The monk Eisai brought powdered tea from China to Japan in 1191. Zen temples embraced it, and by the 1500s tea master Sen no Rikyū had shaped it into chanoyu, the tea ceremony built on harmony, respect, purity and tranquility."},
+ {id:"longjing",name:"Dragon Well",native:"龙井",cat:"green",origin:"Hangzhou, China",temp:80,steeps:[120,150,180],caffeine:"Medium",liquor:"#D3CC7A",
+  flavor:"Toasty chestnut, soft and smooth.",
+  tips:["Brew in a clear glass to watch the flat leaves stand up and drift down.","The leaves give three good steeps; add a little time each round."],
+  enjoy:"Drink plain and notice the toasted chestnut sweetness as it cools.",
+  pair:["Shrimp with tea leaves","Steamed fish","Almond cookies"],
+  story:"Dragon Well comes from the hills around West Lake in Hangzhou. Its flat jade leaves are pan-fired by hand in hot woks. Legend says the Qianlong Emperor named eighteen bushes imperial tea trees, and they are still tended today."},
+ {id:"genmaicha",name:"Genmaicha",native:"玄米茶",cat:"green",origin:"Japan",temp:85,steeps:[120,90],caffeine:"Low",liquor:"#D6C27A",
+  flavor:"Nutty and savory, like toasted rice and popcorn.",
+  tips:["A little hotter than most greens is fine — the toasted rice loves it.","Some popped rice may float; that’s normal."],
+  enjoy:"Comforting with meals or on a cold afternoon. Its popcorn aroma makes it a favorite with first-time tea drinkers.",
+  pair:["Ramen","Tempura","Rice crackers","Teriyaki"],
+  story:"Genmaicha blends green tea with toasted brown rice. It’s often called “people’s tea” because the rice once stretched precious leaves further. Today it’s loved simply for its cozy, savory taste."},
+ {id:"hojicha",name:"Hojicha",native:"ほうじ茶",cat:"green",origin:"Kyoto, Japan",temp:90,steeps:[60,45],caffeine:"Low",liquor:"#A9663A",
+  flavor:"Toasty caramel and cocoa with no bitterness.",
+  tips:["Roasting removed the bitterness, so it’s forgiving with hot water.","Try it as a latte with warm milk and a little honey."],
+  enjoy:"Mellow and low in caffeine — a favorite evening tea in Japan and lovely after a heavy meal.",
+  pair:["Dark chocolate","Roasted sweet potato","Custard pudding","Grilled fish"],
+  story:"Hojicha was first roasted in Kyoto in the 1920s, when tea merchants began roasting leftover leaves and stems over charcoal. Roasting turns the leaves reddish brown and gives a warm, toasty aroma."},
+ {id:"jasmine",name:"Jasmine Pearls",native:"茉莉龙珠",cat:"green",origin:"Fujian, China",temp:80,steeps:[150,180,240],caffeine:"Medium",liquor:"#E3D58E",
+  flavor:"Floral and honeyed with a clean, sweet finish.",
+  tips:["Watch the hand-rolled pearls slowly unfurl.","Avoid boiling water, or the floral scent turns flat."],
+  enjoy:"Enjoy it plain to savor the fragrance. It’s the classic tea at dim sum.",
+  pair:["Dim sum","Peaches","Shortbread","Light seafood"],
+  story:"Fuzhou in Fujian is the heart of jasmine tea. Tea is layered with fresh jasmine buds that open at night, and their scent soaks into the leaves; the finest grades repeat this many times. Jasmine has been China’s best-loved scented tea since the Qing dynasty."},
+
+ {id:"assam",name:"Assam",native:"অসম",cat:"black",origin:"Assam, India",temp:100,steeps:[240],caffeine:"High",liquor:"#8A3E1B",
+  flavor:"Bold, malty and brisk.",
+  tips:["Use freshly boiled water to draw out the full malty body.","It’s strong — perfect with a splash of milk."],
+  enjoy:"A bold morning cup. Add milk and a little sugar, or use it as the base for homemade chai.",
+  pair:["Buttered toast","Scones","Bacon and eggs","Gingerbread"],
+  story:"Assam grows in the lowland Brahmaputra Valley of northeast India. In 1823 Robert Bruce learned of the native tea plant from the Singpho people, and Assam became India’s first tea region. Its malty strength is the backbone of most breakfast blends."},
+ {id:"darjeeling",name:"Darjeeling",native:"दार्जिलिंग",cat:"black",origin:"West Bengal, India",temp:90,steeps:[180,240],caffeine:"High",liquor:"#C27A34",
+  flavor:"Light and floral with muscatel grape notes.",
+  tips:["Use water just off the boil; spring first flush likes it a touch cooler.","Taste before adding milk — lighter flushes are best plain."],
+  enjoy:"Drink it plain to catch the muscatel notes. Autumn and second-flush teas can take a little milk.",
+  pair:["Cucumber sandwiches","Fruit tart","Mild cheese","Lemon cake"],
+  story:"Grown on Himalayan slopes, Darjeeling is called “the Champagne of teas.” Each harvest, or flush, has its own character. In 2004 it became India’s first product with a protected geographical indication."},
+ {id:"ceylon",name:"Ceylon",native:"ලංකා තේ",cat:"black",origin:"Sri Lanka",temp:100,steeps:[240],caffeine:"High",liquor:"#B0501F",
+  flavor:"Bright and brisk with a citrusy edge.",
+  tips:["Fully boiled water brings out its bright, lively character.","Brew it a little stronger for iced tea and pour over ice."],
+  enjoy:"Lively hot or iced, with lemon or milk. A great all-day tea.",
+  pair:["Lemon drizzle cake","Fried chicken","Curry","Shortbread"],
+  story:"Sri Lanka grew coffee until a leaf blight destroyed the crop in the 1870s. James Taylor had planted tea at Loolecondera in 1867, and tea soon covered the hills. The island’s old name, Ceylon, still names its tea."},
+ {id:"keemun",name:"Keemun",native:"祁门红茶",cat:"black",origin:"Anhui, China",temp:95,steeps:[180,240],caffeine:"High",liquor:"#8E3A22",
+  flavor:"Winey and smooth with orchid, cocoa and a whisper of smoke.",
+  tips:["Just under a full boil keeps its floral side.","A second steep brings out cocoa notes."],
+  enjoy:"Elegant on its own, and it takes milk well too.",
+  pair:["Dark chocolate","Roast duck","Plum cake","Aged cheddar"],
+  story:"Keemun comes from Qimen County in Anhui. It was created in 1875 when Yu Ganchen began making black tea in the Fujian style. It quickly became a favorite in Britain and was part of early English Breakfast blends."},
+ {id:"lapsang",name:"Lapsang Souchong",native:"正山小种",cat:"black",origin:"Wuyi Mountains, China",temp:95,steeps:[180,240],caffeine:"High",liquor:"#6E2E18",
+  flavor:"Pine smoke, dried fruit and a sweet, resinous finish.",
+  tips:["Start with a shorter steep — the smoke builds quickly.","Mix a pinch into another black tea for a gentle smoky blend."],
+  enjoy:"A campfire in a cup. Lovely on a cold day, plain or with a little milk.",
+  pair:["Smoked salmon","Aged gouda","Barbecue","Dark chocolate"],
+  story:"Lapsang Souchong from the Wuyi Mountains is often called the world’s first black tea. The leaves are dried over pinewood fires. A local legend says it began when passing soldiers delayed the drying and farmers hurried it over fire."},
+ {id:"yunnan",name:"Yunnan Gold",native:"滇红",cat:"black",origin:"Yunnan, China",temp:95,steeps:[180,240],caffeine:"High",liquor:"#A0521F",
+  flavor:"Honeyed and smooth with a peppery finish.",
+  tips:["Look for golden tips — they bring honeyed sweetness.","Smooth and forgiving; a longer steep rarely turns bitter."],
+  enjoy:"Wonderful plain, with or without milk.",
+  pair:["Honey cake","Spiced nuts","Roast pork","Apple pie"],
+  story:"Dian Hong, Yunnan black tea, was first made in 1939 in Fengqing, Yunnan. It uses the same large-leaf tea plants as pu-erh. The finest grades are covered in soft golden buds."},
+
+ {id:"honey-black",name:"Honey Black",native:"Smoky honey black tea",sub:"Smoky honey black tea from Wuyishan, Fujian, China",cat:"black",origin:"Wuyishan, Fujian, China",temp:100,tempRange:[93,100],steeps:[180,210,240,270],caffeine:"High",liquor:"#B8742A",leaf:"1 tbsp (3 g) per 300 ml",
+  flavor:"Smoky, honey-sweet and malty, with a hint of roasted yam and a mellow finish.",
+  tips:["Use freshly boiled water, anywhere from 93 to 100°C.","Steep for 3 minutes, or to taste, then strain so it doesn’t over-brew.","For a cold brew, use the same amount of leaf in cold water and refrigerate for 4 to 6 hours."],
+  enjoy:"Lovely plain, or with a little honey on a cold day. The same leaves can be steeped again, up to three more times.",
+  pair:["Roasted sweet potato","Dark chocolate","Gingerbread","Walnut cake"],
+  story:"Wuyishan, in northern Fujian, is known as the birthplace of black tea. The story goes that villagers burned Masson pine to keep their tea dry through the damp seasons, and the drifting smoke, with just the right amount of fermentation, drew out a natural sweetness like honey and roasted yam. The practice has continued ever since."},
+ {id:"silver-needle",name:"Silver Needle",native:"白毫银针",cat:"white",origin:"Fujian, China",temp:80,steeps:[240,300,360],caffeine:"Low",liquor:"#EADFA8",
+  flavor:"Delicate honey, melon and soft hay.",
+  tips:["Be patient: a longer steep at a lower temperature.","The buds can be steeped three or more times."],
+  enjoy:"Sip slowly, plain, from a small cup.",
+  pair:["Pear slices","Melon","Almond cookies","Fresh cheese"],
+  story:"Silver Needle uses only downy buds picked in early spring in Fuding and Zhenghe. The buds are simply withered and dried — the least processed of all teas. Their silvery fuzz gives the tea its name."},
+ {id:"white-peony",name:"White Peony",native:"白牡丹",cat:"white",origin:"Fujian, China",temp:85,steeps:[240,300],caffeine:"Low",liquor:"#DDC27C",
+  flavor:"Soft florals with hay and honey.",
+  tips:["It handles slightly hotter water than Silver Needle.","Try cold-brewing overnight in the fridge for a sweet summer drink."],
+  enjoy:"Gentle and floral — lovely plain, hot or cold.",
+  pair:["Strawberries","Goat cheese","Vanilla sponge","Grilled vegetables"],
+  story:"Bai Mu Dan, “White Peony,” is made from a bud and its first two leaves. It’s fuller than Silver Needle but still gentle. Aged white tea cakes are treasured in Fujian, where people say they improve every year."},
+
+ {id:"tieguanyin",name:"Tieguanyin",native:"铁观音",cat:"oolong",origin:"Anxi, Fujian, China",temp:95,steeps:[120,150,180,240],caffeine:"Medium",liquor:"#D7C163",
+  flavor:"Creamy, orchid-floral and buttery.",
+  tips:["Rinse the rolled leaves with hot water for a few seconds first.","Each steep unfurls the leaves more — add time each round."],
+  enjoy:"Best plain, in small cups, over several steeps.",
+  pair:["Steamed dumplings","Lychee","Mooncake","Light stir-fries"],
+  story:"Tieguanyin, the “Iron Goddess of Mercy,” comes from Anxi in Fujian. Legend says a poor farmer named Wei cared for a crumbling temple of Guanyin and was led in a dream to the tea bush. It’s one of China’s most famous oolongs."},
+ {id:"da-hong-pao",name:"Da Hong Pao",native:"大红袍",cat:"oolong",origin:"Wuyi Mountains, China",temp:100,steeps:[90,120,150,180],caffeine:"Medium",liquor:"#9A4E22",
+  flavor:"Roasted, mineral and stony-sweet with a long finish.",
+  tips:["Use fully boiled water to wake up the roasted character.","It rewards many short steeps in a small pot."],
+  enjoy:"Sip slowly; the aftertaste lingers.",
+  pair:["Roast duck","Braised pork","Dark chocolate","Toasted nuts"],
+  story:"Da Hong Pao, “Big Red Robe,” grows on the rocky cliffs of the Wuyi Mountains. Legend tells of an emperor who draped red robes over the bushes to thank them for healing his mother. The original mother trees are now protected and no longer harvested."},
+ {id:"milk-oolong",name:"Milk Oolong",native:"金萱",cat:"oolong",origin:"Taiwan",temp:90,steeps:[120,150,180],caffeine:"Medium",liquor:"#DCC572",
+  flavor:"Buttery, creamy and lightly floral.",
+  tips:["Slightly cooled water shows off the creaminess.","Natural Jin Xuan is creamy on its own; some versions are scented, so check the label."],
+  enjoy:"Smooth and friendly — a great first oolong. Best plain.",
+  pair:["Shortbread","Pineapple cake","Peaches","Mild curry"],
+  story:"Milk oolong comes from Jin Xuan, a tea plant bred in Taiwan and released in 1981. It naturally gives a buttery, milky texture with no milk added, and it thrives in Taiwan’s high mountains."},
+ {id:"oriental-beauty",name:"Oriental Beauty",native:"东方美人",cat:"oolong",origin:"Hsinchu, Taiwan",temp:85,steeps:[150,180,240],caffeine:"Medium",liquor:"#C1772E",
+  flavor:"Honey, ripe peach and muscat.",
+  tips:["Keep the water just below boiling so the honey notes stay sweet.","The curly leaves are delicate — handle them gently."],
+  enjoy:"Naturally sweet; no sugar needed.",
+  pair:["Apricot tart","Honey cake","Ripe figs","Brie"],
+  story:"Oriental Beauty comes from Hsinchu in northern Taiwan. Tiny leafhoppers nibble the leaves in summer, and the plant’s response creates its honey and fruit flavors. A popular tale says Queen Victoria named it, though that’s likely just a legend."},
+
+ {id:"osmanthus-oolong",name:"Osmanthus Oolong",native:"Oolong with osmanthus blossoms",sub:"Oolong scented with osmanthus blossoms, from Anxi, Fujian, China",cat:"oolong",origin:"Anxi, Fujian, China",temp:93,steeps:[60,75,90],caffeine:"Medium",liquor:"#E3CC72",leaf:"1 tbsp per 300 ml",
+  flavor:"Citrus and apricot over a smooth, mellow oolong, with a soft floral fragrance.",
+  tips:["Keep the first steep short: 1 minute in 93°C water.","Add about 15 seconds to each re-steep as the leaves unfold.","For a cold brew, use 1 tbsp per 350 ml of cold water and refrigerate for about 5 hours."],
+  enjoy:"Sip it hot, or cold-brewed over ice for a juicy, refreshing chilled cup.",
+  pair:["Sweet rice cakes","Almond cookies","Mooncake","Apricot tart"],
+  story:"Osmanthus blossoms are tied to autumn memories: Mid-Autumn nights, sweet rice cakes, and streets scented after rain. Once called the “soul fragrance of the East,” the flower was enjoyed in tea by poets and nobles of the Song dynasty. This blend layers roasted oolong from Anxi with real osmanthus blossoms and rests them together until the fragrance settles into the leaves."},
+ {id:"shou",name:"Ripe Pu-erh",native:"熟普洱",cat:"puerh",origin:"Yunnan, China",temp:100,steeps:[120,150,180,240],caffeine:"Medium",liquor:"#4A1E10",
+  flavor:"Earthy, smooth and dark, like forest floor and cocoa.",
+  tips:["Rinse the leaves with boiling water for 10 seconds and pour it away.","It rarely turns bitter, so it’s very forgiving."],
+  enjoy:"Smooth and warming. A classic with rich meals in Hong Kong and southern China.",
+  pair:["Dim sum","Roast pork","Dark chocolate","Mushroom dishes"],
+  story:"Ripe pu-erh is made with wo dui, a careful fermentation of piled leaves developed at the Kunming Tea Factory in 1973. It recreates the depth of long-aged tea in months instead of decades. It’s often pressed into round cakes."},
+ {id:"sheng",name:"Raw Pu-erh",native:"生普洱",cat:"puerh",origin:"Yunnan, China",temp:95,steeps:[90,120,150,180],caffeine:"Medium",liquor:"#C9A33F",
+  flavor:"Young: bright, floral, bittersweet. Aged: mellow, deep and woody.",
+  tips:["Rinse briefly before the first steep.","Young raw pu-erh can be bold; shorten the steep if it’s too bitter."],
+  enjoy:"Sip plain over many steeps and notice how it changes.",
+  pair:["Salted nuts","Dried apricots","Fatty fish","Aged cheese"],
+  story:"Raw pu-erh comes from Yunnan’s large-leaf tea trees, some hundreds of years old. Horse caravans once carried it along the Tea Horse Road to Tibet. Pressed cakes keep changing as they age, much like fine wine."},
+
+ {id:"chamomile",name:"Chamomile",native:"Matricaria",cat:"herbal",origin:"Egypt and Europe",temp:100,steeps:[300],caffeine:"None",liquor:"#E8C755",
+  flavor:"Soft apple and honey.",
+  tips:["Cover the cup while it steeps to keep the aroma in.","Steep longer for a fuller, honeyed cup."],
+  enjoy:"A calm bedtime cup. Add honey and a slice of lemon.",
+  pair:["Honey biscuits","Lemon cake","Apple slices","Oatmeal"],
+  story:"Chamomile flowers were brewed in ancient Egypt, Greece and Rome, and it’s now one of the world’s most popular herbal teas. In Beatrix Potter’s tale, Peter Rabbit’s mother gives him a cup after his adventure."},
+ {id:"peppermint",name:"Peppermint",native:"Mentha × piperita",cat:"herbal",origin:"Europe",temp:100,steeps:[300],caffeine:"None",liquor:"#C9C27A",
+  flavor:"Cool, sweet and refreshing.",
+  tips:["Cover while steeping to keep the cooling oils in the cup.","A longer steep makes it stronger without turning bitter."],
+  enjoy:"Refreshing after meals, hot or iced.",
+  pair:["Dark chocolate","Lamb dishes","Fruit salad","Brownies"],
+  story:"Peppermint is a natural hybrid of watermint and spearmint. It was grown widely in England from the 1700s, especially around Mitcham. It has long been a favorite after-dinner drink across Europe and the Middle East."},
+ {id:"rooibos",name:"Rooibos",native:"Red bush",cat:"herbal",origin:"Cederberg, South Africa",temp:100,steeps:[360],caffeine:"None",liquor:"#B5481F",
+  flavor:"Naturally sweet, nutty, with vanilla and honey.",
+  tips:["Boiling water and a long steep are best — it never turns bitter.","It loves milk and honey, like a caffeine-free breakfast tea."],
+  enjoy:"Try it as a “red latte” with steamed milk.",
+  pair:["Carrot cake","Banana bread","Spiced cookies","Granola"],
+  story:"Rooibos, Afrikaans for “red bush,” grows only in South Africa’s Cederberg region. The Khoisan people harvested it long before it became a commercial tea. Its name is now protected in the EU, much like Champagne."},
+ {id:"hibiscus",name:"Hibiscus",native:"Roselle",cat:"herbal",origin:"Africa, Mexico, Caribbean",temp:100,steeps:[300],caffeine:"None",liquor:"#A8193A",
+  flavor:"Tart and fruity, like cranberry.",
+  tips:["A long, hot steep draws out the deep ruby color.","For iced tea, steep strong, sweeten while warm, then pour over ice."],
+  enjoy:"Delicious iced with honey or lime.",
+  pair:["Tacos","Spiced rice","Dark chocolate","Mango"],
+  story:"Hibiscus is loved worldwide: agua de jamaica in Mexico, karkadé in Egypt, and sorrel at Christmas in the Caribbean. It’s made from the dried calyces of the roselle flower."},
+ {id:"butterfly-pea",name:"Butterfly Pea",native:"อัญชัน",cat:"herbal",origin:"Thailand",temp:95,steeps:[300],caffeine:"None",liquor:"#3E4FB0",
+  flavor:"Mild, earthy and soft.",
+  tips:["Watch it turn deep blue as it steeps.","Squeeze in lemon at the table — it changes from blue to violet."],
+  enjoy:"The magic is the color change. Add honey and lemon, or serve iced.",
+  pair:["Coconut desserts","Sticky rice","Lemon tart","Light salads"],
+  story:"Butterfly pea flower is used across Southeast Asia, especially in Thailand, where the tea is called nam dok anchan. It also tints rice and desserts blue. Its pigments react to acid, which is why lemon turns it purple."},
+
+ {id:"dragonfruit-ginger",name:"Dragonfruit Ginger",native:"Caffeine-free fruit and ginger blend",sub:"Caffeine-free fruit and ginger blend, with ginger from Yunnan, China",cat:"herbal",origin:"Ginger from Yunnan, China",temp:100,steeps:[300],caffeine:"None",liquor:"#C23B5A",leaf:"1 sachet per 300 ml",
+  flavor:"Tropical and bright with lemon peel, then a gentle, warming ginger spice. Made with dragon fruit, orange, shredded ginger, pungent litse fruit, jujube and goji berries.",
+  tips:["Use fully boiled water (100°C) and steep for 5 minutes.","For a cold brew, use 1 sachet per 300 ml of cold water and refrigerate for about 5 hours."],
+  enjoy:"A cozy cup after dinner, or cold-brewed over ice with a little honey. The soft dried fruit can be eaten once it’s brewed.",
+  pair:["Citrus cake","Coconut desserts","Spiced nuts","Fresh fruit"],
+  story:"A Chinese saying goes, “Eat radish in winter, ginger in summer.” Ginger warms and supports digestion, but its heat needs balance. An old tale says dragon fruit was a gift from the Dragon King to calm the summer fire, so the makers paired the two. The blend steeps to a sunset red: spicy, soft and quietly grounding. The ginger is grown on an organic farm in Yunnan."},
+ {id:"earl-grey",name:"Earl Grey",native:"Bergamot black tea",cat:"blend",origin:"England",temp:95,steeps:[180],caffeine:"High",liquor:"#9C4A1E",
+  flavor:"Citrusy bergamot over brisk black tea.",
+  tips:["Avoid very long steeps; bergamot can turn soapy.","Try a London Fog: Earl Grey, steamed milk and a little vanilla."],
+  enjoy:"Plain, with lemon, or with milk.",
+  pair:["Lemon cake","Scones with jam","Lavender shortbread","Chocolate"],
+  story:"Earl Grey is black tea scented with oil of bergamot, a Mediterranean citrus. It’s named after Charles Grey, 2nd Earl Grey and British Prime Minister in the 1830s, though how the blend got his name is still debated."},
+ {id:"english-breakfast",name:"English Breakfast",native:"Assam, Ceylon and Kenyan blend",cat:"blend",origin:"Britain",temp:100,steeps:[240],caffeine:"High",liquor:"#8C3A18",
+  flavor:"Full-bodied, brisk and comforting.",
+  tips:["Use freshly boiled water and a full steep for a strong cup.","Add milk after pouring so you can judge the strength."],
+  enjoy:"Classic with milk and a little sugar.",
+  pair:["Full breakfast","Toast and marmalade","Crumpets","Scones"],
+  story:"English Breakfast blends strong teas such as Assam, Ceylon and Kenyan. Tea merchants in Edinburgh and London both claim to have invented it in the 1800s. It became Britain’s go-to morning cup."},
+ {id:"chai",name:"Masala Chai",native:"मसाला चाय",cat:"blend",origin:"India",temp:100,tempLabel:"Simmer",steeps:[300],caffeine:"High",liquor:"#C99A6B",action:"Simmer",leaf:"2 tsp tea and spices per 2 cups",
+  flavor:"Creamy, spicy and sweet.",
+  steps:["In a saucepan, boil 150 ml water with crushed cardamom, ginger, cinnamon and cloves.","Add 2 tsp of strong black tea, such as Assam.","Pour in 150 ml milk and let it simmer gently while the timer runs.","Sweeten to taste, then strain into cups."],
+  enjoy:"Pour back and forth between cups for extra froth.",
+  pair:["Samosas","Glucose biscuits","Pakoras","Cardamom cake"],
+  story:"Masala chai is India’s beloved spiced milk tea. Spiced drinks are ancient in India, but chai as we know it spread in the 20th century as tea became affordable. Today chai wallahs serve it from small stalls on nearly every street."},
+ {id:"moroccan-mint",name:"Moroccan Mint",native:"أتاي",cat:"blend",origin:"Morocco",temp:90,steeps:[180,180],caffeine:"Medium",liquor:"#C5B460",leaf:"1 tsp gunpowder green and a handful of mint",
+  flavor:"Sweet, minty and refreshing.",
+  tips:["Rinse the gunpowder green briefly, then add fresh spearmint and sugar.","Pour from high above the glass to make a light foam."],
+  enjoy:"Served in small glasses as a warm sign of welcome.",
+  pair:["Almond pastries","Couscous","Dates","Tagine"],
+  story:"Green tea arrived in Morocco through trade with Britain in the 1700s and 1800s, and fresh spearmint made it Moroccan. Serving it is a gesture of hospitality. A saying holds that the first glass is gentle as life, the second strong as love, and the third bitter as death."}
+];
+const byId = Object.fromEntries(TEAS.map(t=>[t.id,t]));
+
+/* ================= Hand-drawn illustrations ================= */
+const LN="var(--line)";
+const f1=n=>Math.round(n*10)/10;
+function leaf(x,y,len,ang,w,fill,o={}){
+  const a=f1(-len*0.22),b=f1(-len*0.78);
+  let s=`<g transform="translate(${x} ${y}) rotate(${ang})"><path d="M0 0C${f1(w)} ${a} ${f1(w*0.8)} ${b} 0 ${-len}C${f1(-w*0.8)} ${b} ${f1(-w)} ${a} 0 0Z" fill="${fill}" stroke="${LN}" stroke-width="${o.sw||1.1}" stroke-linejoin="round"/>`;
+  if(!o.nv){
+    s+=`<path d="M0 -1.5Q${f1(w*0.15)} ${f1(-len*0.5)} 0 ${f1(-len*0.88)}" fill="none" stroke="${LN}" stroke-width=".7" opacity=".55"/>`;
+    if(len>16) for(const k of [0.32,0.56]){
+      s+=`<path d="M0 ${f1(-len*k)}q${f1(w*0.3)} ${f1(-len*0.07)} ${f1(w*0.55)} ${f1(-len*0.15)}M0 ${f1(-len*k)}q${f1(-w*0.3)} ${f1(-len*0.07)} ${f1(-w*0.55)} ${f1(-len*0.15)}" fill="none" stroke="${LN}" stroke-width=".6" opacity=".45"/>`;
+    }
+  }
+  return s+`</g>`;
+}
+function petal(x,y,n,len,w,fill,rot=0,round=true){
+  let s="";
+  for(let i=0;i<n;i++){
+    const d=round?`M0 0C${w} ${f1(-len*0.25)} ${w} ${-len} 0 ${-len}C${-w} ${-len} ${-w} ${f1(-len*0.25)} 0 0Z`
+                 :`M0 0C${w} ${f1(-len*0.3)} ${f1(w*0.6)} ${f1(-len*0.8)} 0 ${-len}C${f1(-w*0.6)} ${f1(-len*0.8)} ${-w} ${f1(-len*0.3)} 0 0Z`;
+    s+=`<path transform="translate(${x} ${y}) rotate(${f1(rot+i*360/n)})" d="${d}" fill="${fill}" stroke="${LN}" stroke-width="1" stroke-linejoin="round"/>`;
+  }
+  return s;
+}
+const dot=(x,y,r,fill,sw=1)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${LN}" stroke-width="${sw}"/>`;
+const ln=(d,w=1.2,col=LN,o=1,extra="")=>`<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" opacity="${o}" ${extra}/>`;
+const shape=(d,fill,sw=1.1)=>`<path d="${d}" fill="${fill}" stroke="${LN}" stroke-width="${sw}" stroke-linejoin="round"/>`;
+const el=(x,y,rx,ry,fill,rot=0,sw=1)=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${fill}" stroke="${LN}" stroke-width="${sw}" transform="rotate(${rot} ${x} ${y})"/>`;
+const bl=(x,y,s)=>`<use href="#blossom" x="${x-s/2}" y="${y-s/2}" width="${s}" height="${s}"/>`;
+const fuzz=(pts,stroke="none")=>pts.map(([x,y])=>`<circle cx="${x}" cy="${y}" r=".95" fill="#fff" stroke="${stroke}" stroke-width=".4" opacity=".95"/>`).join("");
+function rng(seed){let v=seed;return()=>{v=(v*9301+49297)%233280;return v/233280;};}
+function speckle(cx,cy,r,n,col,seed,len=3){
+  const R=rng(seed);let s="";
+  for(let i=0;i<n;i++){const a=R()*6.283,d=Math.sqrt(R())*r,b=R()*6.283;
+    s+=ln(`M${f1(cx+Math.cos(a)*d)} ${f1(cy+Math.sin(a)*d)}l${f1(Math.cos(b)*len)} ${f1(Math.sin(b)*len)}`,1,col,.85);}
+  return s;
+}
+function specDots(cx,cy,r,n,col,seed,rad=.9){
+  const R=rng(seed);let s="";
+  for(let i=0;i<n;i++){const a=R()*6.283,d=Math.sqrt(R())*r;s+=`<circle cx="${f1(cx+Math.cos(a)*d)}" cy="${f1(cy+Math.sin(a)*d)}" r="${rad}" fill="${col}"/>`;}
+  return s;
+}
+function segs(cx,cy,r,n,col){let s="";for(let i=0;i<n;i++){const a=i/n*6.283;s+=ln(`M${cx} ${cy}L${f1(cx+Math.cos(a)*r)} ${f1(cy+Math.sin(a)*r)}`,.8,col,.9);}return s;}
+function needles(x,y,len,col){let s="";for(let i=0;i<9;i++){const a=i/9*6.283+0.3;s+=ln(`M${x} ${y}l${f1(Math.cos(a)*len)} ${f1(Math.sin(a)*len)}`,1.1,col);}return s;}
+function curl(x,y){return ln(`M${x-3} ${y}a3 3 0 1 1 3 3`,.8,LN,.7);}
+
+const ILL = {
+  sencha:()=>ln("M38 88C42 70 50 50 62 22",1.4,"#6E8F5C")
+    +leaf(41.5,72,26,-58,7,"#94BA78")+leaf(44.5,62,24,52,6.5,"#ABC98A")+leaf(49,48,22,-48,6,"#9DC080")+leaf(55,37,18,40,5.5,"#BDD69A")+leaf(62,22,11,12,3.5,"#D3E3AA",{nv:1})
+    +el(24,86,8,1.8,"#6B9156",-12)+el(70,88,7,1.6,"#7A9C60",8)+el(80,82,6,1.5,"#6B9156",-30)+el(28,79,6,1.5,"#7A9C60",20),
+  gyokuro:()=>{let h="";for(let i=1;i<10;i++){const t=i/10,x=10+80*t,y=36-48*t*(1-t)+1.5;h+=ln(`M${f1(x)} ${f1(y-1.5)}l0 3.5`,.8,LN,.6);}
+    return ln("M14 38V84",1.4)+ln("M86 38V84",1.4)+shape("M10 36Q50 12 90 36L90 40Q50 17 10 40Z","#EAD8A9")+h
+    +leaf(50,86,30,-32,9,"#5E8A4E")+leaf(52,86,32,18,9.5,"#6F9A5A")+leaf(50,86,22,-68,7,"#7FA866")+leaf(53,86,20,58,6.5,"#86AE6E")
+    +`<circle cx="61" cy="62" r="2.6" fill="#EAF4F7" stroke="${LN}" stroke-width=".8"/><circle cx="60.2" cy="61.2" r=".8" fill="#fff"/>`;},
+  matcha:()=>{let t="";for(let i=-4;i<=4;i++)t+=ln(`M84 50Q${f1(84+i*1.6)} 63 ${f1(84+i*2.4)} 76`,1,"#B8955A");
+    return shape("M10 52C10 76 24 86 40 86C56 86 70 76 70 52Z","#EADBC4")+shape("M30 86L32 90H48L50 86Z","#D9C7AA")
+    +el(40,52,30,6.5,"#8DB45E")+specDots(40,52,20,14,"#C4DC96",7,1.2)
+    +ln("M17 62q2 6 0 11",1,"#B48D4B",.6)+ln("M63 62q-2 6 0 10",1,"#B48D4B",.6)+ln("M40 66v6",1,"#B48D4B",.4)
+    +ln("M84 16V48",4.2,"#C9A86A")+ln("M84 16V48",.8,LN,.6)+t+el(84,50,4.2,1.6,"#C9A86A",0,.8);},
+  longjing:()=>ln("M20 20C22 30 22 40 20 50",1,"#B9A98A",.8)+ln("M26 18C29 30 30 42 28 54",1,"#B9A98A",.8)+ln("M32 20C34 28 35 36 34 44",1,"#B9A98A",.6)
+    +ln("M10 70Q30 50 50 70",1.4)+ln("M10 70H50",1)+ln("M10 73Q30 88 50 73",1,LN,.35)
+    +leaf(66,88,36,-22,4.6,"#C9C47A")+leaf(66,88,34,4,4.8,"#B6BB6A")+leaf(66,88,28,28,4.2,"#D6D18C"),
+  genmaicha:()=>leaf(38,84,32,-24,8,"#8FB07C")+leaf(41,84,28,26,7.5,"#A9C38E")+leaf(39,84,16,-2,3.5,"#C7D99E",{nv:1})
+    +el(64,72,5,2.6,"#D9A65C",30)+el(74,80,5,2.6,"#C99550",-20)+el(60,84,5,2.6,"#D9A65C",10)+el(78,68,4.6,2.4,"#C99550",50)+el(70,89,4.6,2.4,"#D9A65C",-40)
+    +dot(68,56,3.2,"#FFF8EC",.8)+dot(71.5,53.5,2.8,"#FFF8EC",.8)+dot(71,58.5,2.6,"#FFF8EC",.8)+dot(81,58,2.6,"#FFF8EC",.8)+dot(83.5,55.5,2.2,"#FFF8EC",.8),
+  hojicha:()=>ln("M42 52C38 44 48 40 44 32C41 26 46 22 44 18",1.2,"#B9A98A",.75)+ln("M56 54C52 46 62 42 58 34",1.2,"#B9A98A",.5)
+    +shape("M82 72L96 62L98 65L85 75Z","#D9C29C")+el(48,76,36,9,"#E7D3B1")+el(48,74.5,30,5.5,"#D9C29C",0,.6)
+    +ln("M28 74L44 70",1.6,"#7A4A28")+ln("M52 73L66 68",1.6,"#7A4A28")
+    +leaf(36,75,18,-62,5,"#A0663A")+leaf(48,75,20,-8,5.5,"#8C5530")+leaf(60,75,16,48,5,"#B07446")+leaf(55,75,14,-40,4.5,"#9A5E34"),
+  jasmine:()=>ln("M30 74C38 60 46 50 56 42",1.2,"#6E8F5C")+leaf(34,68,24,-62,7,"#8FB07C")+ln("M46 50L44 38",1,"#6E8F5C")
+    +leaf(44,38,13,-26,3.6,"#FBF3E2",{nv:1})+petal(58,40,5,16,5,"#FFFCF4",0,false)+dot(58,40,2.6,"#F2D36B",.8)
+    +dot(34,82,6.5,"#8DA36A")+curl(34,82)+dot(49,85,6.5,"#7C955B")+curl(49,85)+dot(64,82,6.5,"#9AAE74")+curl(64,82)+dot(77,75,5.5,"#8DA36A")+curl(77,75),
+  assam:()=>leaf(48,90,50,-20,15,"#7FA05F")+leaf(51,90,42,26,13,"#93B072")+leaf(50,90,22,2,4.5,"#C5D79A",{nv:1})
+    +[[22,86],[26,91],[30,87],[72,91],[77,88],[80,92],[18,92]].map(([x,y])=>dot(x,y,1.9,"#7A3A1A",.5)).join(""),
+  darjeeling:()=>shape("M6 60L26 30L36 42L52 18L68 44L78 34L94 60Z","#EDF0EA")
+    +shape("M47 25.5L52 18L57 26L54.5 24.5L52 27L49.5 24.5Z","#FFFFFF",.8)+shape("M22.5 35L26 30L29.5 35L27.5 34L26 36L24.5 34Z","#FFFFFF",.8)
+    +ln("M6 68Q50 60 94 68",5,"#8FB07C",1,'stroke-dasharray="1 6"')+ln("M6 77Q50 69 94 77",5,"#9DBA84",1,'stroke-dasharray="1 6"')+ln("M10 86Q50 79 90 86",5,"#8FB07C",1,'stroke-dasharray="1 6"')
+    +leaf(82,98,26,-34,7,"#A9A066"),
+  ceylon:()=>leaf(32,86,34,-28,9,"#7FA05F")+leaf(35,86,28,18,8,"#98B576")+leaf(33,86,14,-4,3,"#C5D79A",{nv:1})
+    +dot(66,54,15,"#F6DF8A",1.1)+`<circle cx="66" cy="54" r="11.5" fill="#FBEFB8" stroke="#E2C25A" stroke-width=".8"/>`+segs(66,54,11,8,"#E2C25A")
+    +`<rect x="58" y="74" width="16" height="16" rx="3" transform="rotate(14 66 82)" fill="#EAF3F6" fill-opacity=".9" stroke="${LN}" stroke-width="1"/>`+ln("M62 78l5 1",1.2,"#fff",.9),
+  keemun:()=>ln("M56 44C50 62 44 76 40 92",1.2,"#6E8F5C")+leaf(43,84,24,-52,6,"#8FB07C")
+    +leaf(56,40,20,0,6,"#F3D7E3",{nv:1})+leaf(56,40,20,125,6,"#F3D7E3",{nv:1})+leaf(56,40,20,235,6,"#F3D7E3",{nv:1})
+    +leaf(56,40,15,62,7.5,"#EBC1D4",{nv:1})+leaf(56,40,15,-62,7.5,"#EBC1D4",{nv:1})
+    +shape("M52 42C52 50 60 50 60 42C58 45 54 45 52 42Z","#D98FAF",.9)+dot(56,39,2,"#F2D36B",.7)
+    +ln("M58 86q3 -6 7 -2t7 -3",2,"#5A2E1E")+ln("M64 92q3 -5 7 -1t6 -3",2,"#6E3824")+ln("M72 80q2 -4 5 -1t5 -2",1.8,"#5A2E1E"),
+  lapsang:()=>ln("M30 92C24 82 38 78 32 68C27 60 36 54 34 46",1.3,"#B9A98A",.6)+ln("M46 92C42 84 52 80 48 72",1.3,"#B9A98A",.45)
+    +ln("M10 28C30 34 50 44 70 64",1.8,"#7A5634")
+    +needles(22,31,7,"#5E7E4E")+needles(37,37,7,"#6B8B58")+needles(51,46,7,"#5E7E4E")+needles(62,55,6,"#6B8B58")
+    +el(74,72,6,9,"#A0703F",-35)+ln("M70 67q4 2 8 0M69 71.5q5 2 10 0M70 76q4 2 8 0",.8,LN,.7),
+  yunnan:()=>leaf(64,88,18,40,4.5,"#B07A2C")+leaf(38,88,22,-42,5,"#C98F33")+leaf(46,88,32,-16,6.5,"#D9A441")+leaf(56,90,30,14,6.5,"#E3B65A")
+    +fuzz([[42,72],[44,64],[46,76],[48,68],[59,74],[61,66],[60,80],[57,70],[35,78],[38,72],[40,66],[63,62]],"#C99A3A"),
+  "silver-needle":()=>leaf(40,90,40,-8,7,"#ECEAE0")+leaf(52,92,46,2,7.5,"#F5F3EB")+leaf(64,90,38,12,7,"#E4E1D3")
+    +leaf(40,90,9,-42,3,"#9DB57E",{nv:1})+leaf(64,90,9,42,3,"#9DB57E",{nv:1})+leaf(52,92,8,0,3,"#8FAE72",{nv:1})
+    +fuzz([[37,66],[40,60],[42,72],[38,76],[50,56],[53,62],[51,70],[54,78],[52,50],[63,64],[66,70],[64,58],[61,76],[48,82]],"#C9C2A4"),
+  "white-peony":()=>ln("M50 56C54 70 58 80 63 92",1.1,"#6E8F5C")
+    +petal(46,42,7,18,10,"#F9E3DC")+petal(46,42,6,12,8,"#F2C7BE",26)+dot(46,42,4,"#F2D36B",.8)+specDots(46,42,7,8,"#C9A13A",3,.9)
+    +leaf(62,92,26,-30,7,"#C9CF94")+leaf(65,92,22,22,6,"#A9BE95")+leaf(63,92,16,-2,4,"#EFEBDD",{nv:1}),
+  tieguanyin:()=>el(50,56,26,4.5,"#A9C38E")
+    +leaf(50,54,16,-74,7,"#F2C9D1",{nv:1})+leaf(50,54,16,74,7,"#F2C9D1",{nv:1})+leaf(50,54,20,-38,8,"#F6D9DF",{nv:1})+leaf(50,54,20,38,8,"#F6D9DF",{nv:1})+leaf(50,54,23,0,8.5,"#FAE6EA",{nv:1})
+    +dot(34,80,7,"#6F9A5A")+curl(34,80)+dot(50,84,7,"#5E8A4E")+curl(50,84)+dot(66,80,7,"#7FA866")+curl(66,80)+leaf(71,74,9,32,3,"#9DB57E",{nv:1}),
+  "da-hong-pao":()=>shape("M8 92L20 50L30 56L42 28L56 42L64 32L80 62L92 92Z","#DCCFBC")
+    +ln("M42 28L44 44L40 58M64 32L62 48M30 56L34 70M80 62L74 78",.8,LN,.5)
+    +[[24,52],[27.5,51],[46,40],[49.5,38.5],[53,40.5],[66,36],[69.5,35],[77,57],[80,58.5]].map(([x,y])=>dot(x,y,3,"#7FA05F",.8)).join("")
+    +shape("M36 31C44 22 60 22 68 31C63 33 62 39 64 47C56 41 48 41 41 47C43 40 41 34 36 31Z","#C64A3A")
+    +ln("M48 28C48 34 50 38 52 43M58 28C58 34 58 38 60 44",.8,"#8E2A20",.7),
+  "milk-oolong":()=>el(64,68,17,3.6,"#FBF5E6",0,.8)+shape("M64 22C72 36 76 44 76 51A12 12 0 0 1 52 51C52 44 56 36 64 22Z","#FFFDF7")
+    +ln("M57 49a7 7 0 0 0 4 7",1,LN,.4)+dot(46,62,1.8,"#FFFDF7",.8)+dot(82,63,1.8,"#FFFDF7",.8)+dot(78,58,1.3,"#FFFDF7",.7)
+    +leaf(24,70,22,-22,6,"#B5C994")+dot(30,82,7,"#8AA86A")+curl(30,82)+dot(45,87,7,"#9DB57E")+curl(45,87)+dot(60,85,6,"#7E9E62")+curl(60,85),
+  "oriental-beauty":()=>leaf(42,90,42,-14,11,"#C98A47")+leaf(47,90,32,32,9,"#D9A35E")+leaf(43,90,20,-2,4,"#F1E7D0",{nv:1})
+    +shape("M62 47L73 41.5L71 46.5Z","#E6F0D8",.6)+el(64,48,4.5,2,"#8FB26A",-28,.8)+`<circle cx="60.6" cy="49.6" r=".8" fill="${LN}"/>`
+    +shape("M26 44C30 50 32 53 32 56A6 6 0 0 1 20 56C20 53 22 50 26 44Z","#E7A93B")+ln("M23.5 55a2.5 2.5 0 0 0 2 2.4",.9,"#fff",.8),
+  shou:()=>shape("M14 40C30 30 64 28 80 38L84 78C66 88 30 90 12 80Z","#F3E9D6")+dot(46,58,28,"#5A3420",1.2)
+    +speckle(46,58,24,26,"#86563A",11)+dot(46,58,4,"#3E2214",.8)+dot(74,78,6,"#C64A3A",.6)+ln("M71.5 76.5h5M71.5 79.5h5",.8,"#F3E9D6",.9)
+    +ln("M90 14L74 38",2,"#B48D4B")+shape("M88 10L94 14L91 18L85 14Z","#C64A3A",.8),
+  sheng:()=>shape("M76 94C72 76 80 62 74 46L80 44C86 62 78 76 84 94Z","#9A7550")+ln("M78 88c-1 -6 1 -10 0 -14M80 66c1 -4 0 -8 -1 -11",.8,LN,.5)
+    +leaf(77,46,20,-40,6,"#7FA05F")+leaf(77,46,18,30,6,"#93B072")+leaf(77,46,22,-4,6,"#88A866")+leaf(77,46,14,70,5,"#A5BF84")
+    +dot(38,66,24,"#A8955A")+speckle(38,66,20,22,"#7F6F38",5)+speckle(38,66,18,8,"#6E9A55",21,2.5)+dot(38,66,3.5,"#7F6F38",.8),
+  chamomile:()=>ln("M40 46C42 62 44 78 46 92",1.2,"#6E8F5C")+ln("M66 62C64 74 60 84 56 92",1.2,"#6E8F5C")
+    +ln("M44 76l-8 -6M44 76l-6 -10M45 83l8 -6M45 83l7 -9M60 82l-6 -5",1,"#6E8F5C")
+    +petal(40,40,13,15,3.6,"#FFFDF6")+dot(40,40,5.5,"#F2C641")+specDots(40,40,4,7,"#D9A322",9,.7)
+    +petal(66,60,11,11,3,"#FFFDF6",10)+dot(66,60,4.2,"#F2C641"),
+  peppermint:()=>ln("M50 94C50 72 50 50 50 28",1.3,"#5C7E52")
+    +leaf(50,82,22,-68,8,"#6FA06A")+leaf(50,82,22,68,8,"#7BAA74")+leaf(50,64,20,-58,7.5,"#6FA06A")+leaf(50,64,20,58,7.5,"#7BAA74")+leaf(50,46,16,-44,6,"#86B57E")+leaf(50,46,16,44,6,"#86B57E")
+    +[[50,24],[47.5,28],[52.5,28],[50,32],[48,20.5],[52,20.5]].map(([x,y])=>dot(x,y,2,"#C9B3E0",.6)).join(""),
+  rooibos:()=>{const pts=[[40,40],[37,34],[44,50],[46,62],[46,78],[55,57],[61,51],[66,45],[30,48],[24,46],[45,87],[34,28]];
+    return ln("M46 94C46 72 42 52 34 26",1.3,"#8A4A2A")+ln("M45 70C52 60 60 50 70 40",1.2,"#8A4A2A")+ln("M42 56C36 50 28 46 18 46",1.1,"#8A4A2A")
+    +pts.map(([x,y])=>ln(`M${x} ${y}l-5 -5M${x} ${y}l5 -5`,1.8,"#B5481F")).join("")
+    +petal(72,30,5,7,3,"#F2D36B")+dot(72,30,1.6,"#E3A93B",.6);},
+  hibiscus:()=>petal(48,48,5,26,15,"#D7385A",8)+segs(48,48,20,5,"#9E1E3E")+dot(48,48,6,"#7A1430",.8)
+    +ln("M48 48C54 38 60 32 64 24",2,"#F3D0D8")+[[64,24],[61.5,27],[66.5,27],[63.5,21]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.6" fill="#F2C641"/>`).join("")
+    +shape("M18 88L22 78L26 86L30 78L32 90Z","#8E1F38",.8),
+  "butterfly-pea":()=>ln("M50 72C50 82 56 88 62 86C66 84 64 78 60 80",1.1,"#6E8F5C")
+    +leaf(72,94,20,-56,7,"#8FB07C")+leaf(30,94,18,50,6,"#9DB57E")
+    +shape("M50 20C72 20 82 42 72 60C66 70 58 72 50 72C42 72 34 70 28 60C18 42 28 20 50 20Z","#3F5AC6")
+    +ln("M50 28V48M40 30L46 50M60 30L54 50M32 40L44 54M68 40L56 54",.7,"#C8D2F5",.55)
+    +el(50,56,7,11,"#F7F2FF",0,.7)+el(50,60,3,5.5,"#F2C94C",0,.6)+shape("M46 70C46 78 54 78 54 70Z","#5C74D6",.8),
+  "earl-grey":()=>ln("M42 40V36",1.2,"#6E5A3A")+leaf(43,37,16,40,6,"#7FA05F")+leaf(41,37,13,-30,5,"#93B072")
+    +dot(42,58,20,"#D9DB6E",1.2)+specDots(42,58,17,24,"#B9BC4E",4,.8)+ln("M31 50q4 -6 10 -7",1.4,"#fff",.6)
+    +dot(72,76,13,"#E7DD7E")+`<circle cx="72" cy="76" r="10" fill="#F6EFB2" stroke="#D9C95A" stroke-width=".7"/>`+segs(72,76,9.5,8,"#D9C95A"),
+  "english-breakfast":()=>shape("M28 62C18 60 14 48 9 42L12 40C18 46 22 52 30 55Z","#FFF9F0")
+    +ln("M73 52C88 50 88 74 70 74",3.4,LN)+ln("M73 52C88 50 88 74 70 74",1.4,"#FFF9F0")
+    +shape("M26 58C26 42 74 42 74 58C74 78 62 86 50 86C38 86 26 78 26 58Z","#FFF9F0")
+    +shape("M36 46C36 40 64 40 64 46Z","#FFF9F0")+dot(50,37,3.2,"var(--gold)",.8)
+    +ln("M28 66Q50 72 72 66",2.4,"#6F8BC4",.85)+ln("M33 51Q50 55 67 51",1,"var(--gold)",.9)+bl(42,77,10)+bl(57,79,7),
+  chai:()=>petal(32,38,8,11,4,"#8E4B2A",0,false)+dot(32,38,2.2,"#5E2E18",.6)
+    +`<g transform="rotate(-28 66 44)"><rect x="50" y="40" width="32" height="7" rx="3" fill="#B0703E" stroke="${LN}" stroke-width="1"/><ellipse cx="82" cy="43.5" rx="2.2" ry="3.5" fill="#8A5428" stroke="${LN}" stroke-width=".8"/>
+      <rect x="48" y="49" width="30" height="7" rx="3" fill="#A5653A" stroke="${LN}" stroke-width="1"/><ellipse cx="78" cy="52.5" rx="2.2" ry="3.5" fill="#8A5428" stroke="${LN}" stroke-width=".8"/></g>`
+    +el(28,74,7,4,"#A3B56E",-30)+ln("M23 77q5 -2 10 -6",.7,LN,.6)+el(41,81,6.5,3.6,"#93A860",20)+ln("M36 80q5 0 10 2.5",.7,LN,.6)
+    +shape("M58 80C58 72 66 70 70 74C72 68 80 68 82 74C86 74 88 82 82 86C76 90 62 90 58 86C54 84 56 80 58 80Z","#E1C084")+ln("M66 78v6M76 76v7",.7,LN,.5)
+    +ln("M46 58l6 6",1.6,"#6B3A22")+dot(45.5,57.5,2,"#6B3A22",.5),
+  "moroccan-mint":()=>ln("M37 66C26 62 20 52 15 38",3.4,LN)+ln("M37 66C26 62 20 52 15 38",1.6,"#E4E2DB")
+    +ln("M62 56C76 54 76 76 64 78",3.2,LN)+ln("M62 56C76 54 76 76 64 78",1.4,"#E4E2DB")
+    +shape("M38 84C28 84 28 66 38 58C42 54 45 51 45 47H55C55 51 58 54 62 58C72 66 72 84 62 84Z","#E4E2DB")
+    +shape("M44 47L50 30L56 47Z","#D8D5CC")+dot(50,28,2.4,"var(--gold)",.7)+ln("M35 86H65",1.6)
+    +ln("M34 72Q50 78 66 72",1,"var(--gold)",.9)+ln("M36 66Q50 70 64 66",1.6,"var(--gold)",1,'stroke-dasharray="0 3"')
+    +ln("M80 94L81 82",1,"#4E7A4E")+leaf(80,94,18,-38,6.5,"#5E9A5E")+leaf(82,94,16,28,6,"#6FAA6A")+leaf(81,84,12,-4,5,"#7DB676")
+};
+
+ILL["honey-black"]=()=>ln("M24 60C18 52 30 48 24 40C20 34 26 28 24 24",1.2,"#B9A98A",.7)+ln("M37 58C32 52 41 48 37 42",1.2,"#B9A98A",.5)
+  +leaf(34,90,44,-28,10,"#5A2E1E")+leaf(40,90,38,20,9,"#7A3F24")+leaf(37,90,20,-4,4,"#D9A441",{nv:1})
+  +ln("M77 12L63 54",3.8,"#C9A86A")+ln("M77 12L63 54",.8,LN,.6)
+  +el(61,60,9.5,6.5,"#E3A93B",-16)+ln("M53 58h16M54 62h14",.8,LN,.6)
+  +shape("M61 67C63 73 64 75 64 78A3 3 0 0 1 58 78C58 75 59 73 61 67Z","#E7A93B");
+ILL["osmanthus-oolong"]=()=>ln("M14 34C32 26 54 24 84 30",1.4,"#6E8F5C")
+  +leaf(34,29,18,-60,5.5,"#5E8A4E")+leaf(52,27,18,58,5.5,"#6F9A5A")+leaf(70,29,16,-52,5,"#5E8A4E")
+  +[[22,40],[30,46],[41,38],[49,46],[60,38],[67,47],[77,36],[36,54],[55,55]].map(([x,y])=>petal(x,y,4,6.5,3,"#F2B84B",20,true)+dot(x,y,1.3,"#D9822B",.4)).join("")
+  +dot(34,76,7,"#6F9A5A")+curl(34,76)+dot(50,81,7,"#5E8A4E")+curl(50,81)+dot(66,76,7,"#7FA866")+curl(66,76);
+ILL["dragonfruit-ginger"]=()=>dot(20,24,10,"#F4A53A")+segs(20,24,9,8,"#FFE2B0")+dot(20,24,2,"#FFE2B0",.6)
+  +el(46,56,29,25,"#D43A78",-10)+el(46,56,23,19,"#FFF6F2",-10)+specDots(46,56,16,28,"#2B2220",6,.9)
+  +leaf(73,36,13,50,4,"#7DB35A")+leaf(66,30,13,18,4,"#7DB35A")+leaf(77,47,12,82,4,"#7DB35A")
+  +"<g transform=\"translate(-9 -5)\">"+shape("M56 80C62 72 71 74 75 78C82 76 88 82 84 88C78 92 68 92 60 90C54 88 52 82 56 80Z","#E1C084")+ln("M63 82v6M73 80v7",.7,LN,.5)+"</g>"
+  +dot(22,80,3,"#C64A3A",.6)+dot(29,85,3,"#C64A3A",.6)+dot(16,86,3,"#C64A3A",.6);
+
+/* Type motifs, used for teas people add themselves */
+const MOTIF_ILL = {
+  green:()=>ln("M50 80C50 62 52 46 56 32",1.4,"#6E8F5C")+leaf(50.5,62,30,-55,8,"#8FB07C")+leaf(52.5,51,28,48,7.5,"#A9C38E")+leaf(56,32,16,10,4,"#C7D99E",{nv:1}),
+  black:()=>leaf(32,78,56,30,16,"#A55A35")+ln("M62 72C70 72 74 66 72 60",1.6,"var(--gold)")+dot(72,58,2.2,"var(--gold)",.6),
+  white:()=>ln("M50 88V54",1.4,"#6E8F5C")+leaf(50,56,40,0,8,"#ECEAE0")+leaf(50,68,16,-48,5,"#C9CF94")+fuzz([[46,30],[54,26],[47,40],[55,38],[51,46]],"#C9C2A4"),
+  oolong:()=>dot(38,64,11,"#6F8E5C")+curl(38,64)+dot(60,68,9,"#86A36C")+curl(60,68)+dot(50,48,8,"#9DB57E")+curl(50,48)+leaf(60,44,24,50,7,"#B5C994"),
+  puerh:()=>dot(50,54,30,"#7A4A2E")+speckle(50,54,26,18,"#A86C46",17)+dot(50,54,4,"var(--parchment)",.8)+shape("M20 48C36 42 64 42 80 48L80 54C64 48 36 48 20 54Z","var(--blush)",.6),
+  herbal:()=>ln("M50 84V58",1.4,"#6E8F5C")+leaf(50,74,16,-58,6,"#9DB57E")+petal(50,42,6,13,6.5,"#F2E3A6")+dot(50,42,6,"#E3B54B"),
+  blend:()=>dot(44,58,22,"#F1C77A")+segs(44,58,20,8,"#FFF4DA")+dot(44,58,3,"#FFF4DA",.6)+leaf(62,40,20,48,7,"#8FB07C")+dot(72,74,5,"#A55A35",.8)
+};
+function buildSprite(){
+  let s="<defs>";
+  TEAS.forEach(t=>{ s+=`<symbol id="t-${t.id}" viewBox="0 0 100 100">${ILL[t.id]?ILL[t.id]():""}</symbol>`; });
+  TYPES.forEach(c=>{ s+=`<symbol id="m-${c}" viewBox="0 0 100 100">${MOTIF_ILL[c]()}</symbol>`; });
+  s+=`<symbol id="m-add" viewBox="0 0 100 100"><circle cx="50" cy="50" r="22" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-dasharray="0 4" stroke-linecap="round"/><path d="M50 38V62M38 50H62" stroke="var(--sage-deep)" stroke-width="3" stroke-linecap="round"/>${bl(68,32,12)}</symbol>`;
+  document.getElementById("illos").innerHTML=s+"</defs>";
+}
+buildSprite();
+
+/* ================= Storage ================= */
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+let unit = load("lt-unit","C");
+let favs = new Set(load("lt-favs",[]));
+let customs = (load("lt-customs",[])||[]).map(sanitize).filter(Boolean);
+let cat="all", query="", mainTab="teas";
+const Store={col:null,synced:false};
+
+function sanitize(v,idOverride){
+  if(!v||typeof v!=="object") return null;
+  const id=String(idOverride||v.id||""); if(!/^tea_[a-z0-9]+$/i.test(id)) return null;
+  const c=TYPES.includes(v.cat)?v.cat:"green";
+  const name=String(v.name||"").trim().slice(0,40); if(!name) return null;
+  let temp=Number(v.temp); if(!isFinite(temp)) temp=CAT_DEFAULT[c].t; temp=Math.min(100,Math.max(40,Math.round(temp)));
+  let steeps=Array.isArray(v.steeps)?v.steeps.map(Number).filter(n=>isFinite(n)&&n>0&&n<=1800).slice(0,8):[];
+  if(!steeps.length) steeps=[CAT_DEFAULT[c].s];
+  return {id,custom:true,name,cat:c,temp,steeps,
+    leaf:String(v.leaf||"").slice(0,60),notes:String(v.notes||"").slice(0,600),created:Number(v.created)||0,
+    native:"Your tea",origin:"Your collection",caffeine:CAT_CAFF[c],liquor:CAT_LIQ[c]};
+}
+const plain=t=>({id:t.id,name:t.name,cat:t.cat,temp:t.temp,steeps:t.steeps,leaf:t.leaf,notes:t.notes,created:t.created});
+function persistLocal(){ save("lt-customs",customs.map(plain)); save("lt-favs",[...favs]); }
+function dbWrite(id,obj){ if(!Store.col) return; Store.col.doc(id).set(obj).catch(e=>{ if(e&&e.code==="invalid_argument") Store.col=null; }); }
+function dbDelete(id){ if(!Store.col) return; Store.col.doc(id).delete().catch(()=>{}); }
+function saveFavs(){ persistLocal(); dbWrite("prefs",{favs:[...favs]}); }
+
+async function initStore(){
+  try{
+    if(!window.claude||typeof window.claude.use!=="function") return;
+    const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);
+    if(!db||!user) return;
+    const uid=await user.id(); if(!uid) return;
+    const col=db.collection("data/users/"+uid);
+    Store.col=col;
+    col.onSnapshot(snap=>{
+      let list=[],prefs=null;
+      snap.docs.forEach(d=>{ if(!d.exists) return; const v=d.data();
+        if(d.id==="prefs") prefs=v; else if(d.id.startsWith("tea_")){ const c=sanitize(v,d.id); if(c) list.push(c); } });
+      if(!Store.synced){
+        Store.synced=true;
+        const ids=new Set(list.map(x=>x.id));
+        customs.filter(c=>!ids.has(c.id)).forEach(c=>{ dbWrite(c.id,plain(c)); list.push(c); });
+        if(!prefs && favs.size) dbWrite("prefs",{favs:[...favs]});
+        $("#savedNote").textContent="Your teas are saved to your account, so they show up on your phone and computer.";
+      }
+      customs=list.sort((a,b)=>(b.created||0)-(a.created||0));
+      if(prefs&&Array.isArray(prefs.favs)) favs=new Set(prefs.favs.filter(x=>typeof x==="string"));
+      persistLocal(); renderGrid();
+      if(view&&view.custom){ const fresh=getTea(view.id); if(fresh){view=fresh; renderSheetStatic(); updateUI();} else closeSheet(); }
+    },()=>{ Store.col=null; });
+  }catch(e){ Store.col=null; }
+}
+
+/* ================= Helpers ================= */
+const $ = s=>document.querySelector(s);
+const fmt = s=>{s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
+const toF = c=>Math.round(c*9/5+32);
+const tempText = t=> t.tempLabel ? t.tempLabel : t.tempRange ? (unit==="C" ? t.tempRange[0]+"–"+t.tempRange[1]+"°C" : toF(t.tempRange[0])+"–"+toF(t.tempRange[1])+"°F") : (unit==="C" ? t.temp+"°C" : toF(t.temp)+"°F");
+const ordinal = n=>["1st","2nd","3rd","4th","5th","6th","7th","8th"][n]||(n+1)+"th";
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const artId = t=> t.custom ? "m-"+t.cat : "t-"+t.id;
+const getTea = id=> customs.find(c=>c.id===id) || byId[id] || null;
+const allTeas = ()=>[...customs,...TEAS];
+
+document.querySelectorAll("[data-unit]").forEach(b=>{
+  b.setAttribute("aria-pressed", b.dataset.unit===unit);
+  b.addEventListener("click",()=>{unit=b.dataset.unit;save("lt-unit",unit);
+    document.querySelectorAll("[data-unit]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.unit===unit));
+    renderGrid(); if(view) renderSheetStatic(); if(mainTab==="timer") renderHub();});
+});
+
+/* ================= Grid ================= */
+const chipsEl=$("#chips");
+chipsEl.innerHTML=CATS.map(c=>`<button type="button" class="chip" data-cat="${c.id}" aria-pressed="${c.id===cat}">${c.label}</button>`).join("");
+chipsEl.addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;cat=b.dataset.cat;
+  chipsEl.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===b));renderGrid();});
+$("#q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();renderGrid();});
+
+function matches(t){
+  if(mainTab==="saved" && !favs.has(t.id)) return false;
+  if(mainTab==="mine" && !t.custom) return false;
+  if(mainTab==="teas" && TYPES.includes(cat) && t.cat!==cat) return false;
+  if(mainTab!=="teas" || !query) return true;
+  return [t.name,t.native,t.origin,t.flavor||"",t.notes||"",CAT_LABEL[t.cat]].join(" ").toLowerCase().includes(query);
+}
+function cardHTML(t){
+  return `<div class="card">
+    <button type="button" class="card-main" data-open="${t.id}" aria-label="Open ${esc(t.name)}">
+      <svg class="frame" viewBox="0 0 100 100" aria-hidden="true"><use href="#quatre"/><use href="#${artId(t)}" x="6" y="6" width="88" height="88" clip-path="url(#qclip)"/></svg>
+      <h3>${esc(t.name)}</h3>
+      <span class="native">${esc(t.native)}</span>
+      <span class="origin"><span class="liquor" style="--liq:${t.liquor}"></span> ${esc(t.custom?CAT_LABEL[t.cat]:t.origin)}</span>
+      <span class="pills">
+        <span class="pill"><svg aria-hidden="true"><use href="#i-temp"/></svg>${tempText(t)}</span>
+        <span class="pill"><svg aria-hidden="true"><use href="#i-time"/></svg>${fmt(t.steeps[0])}</span>
+      </span>
+    </button>
+    <button type="button" class="fav" data-fav="${t.id}" aria-pressed="${favs.has(t.id)}" aria-label="Save ${esc(t.name)}"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+  </div>`;
+}
+const addCardHTML=`<div class="card add"><button type="button" class="card-main" data-add="1">
+  <svg class="frame" viewBox="0 0 100 100" aria-hidden="true"><use href="#quatre"/><use href="#m-add" x="14" y="14" width="72" height="72"/></svg>
+  <h3>Add your own tea</h3><p>Save a tea you love with its own temperature and steep times.</p></button></div>`;
+
+function emptyHTML(ico,title,text,browse){
+  return `<div class="empty"><svg class="eico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-tab-${ico}"/></svg><h3>${title}</h3><p>${text}</p>${browse?`<button type="button" class="addbtn" data-go="teas">Browse teas</button>`:""}</div>`;
+}
+function renderGrid(){
+  const list=allTeas().filter(matches);
+  $("#count").textContent = list.length===1 ? "1 tea" : list.length+" teas";
+  const showAdd = mainTab==="teas" && !query;
+  if(mainTab==="timer"){ $("#grid").hidden=true; return; }
+  $("#grid").hidden=false;
+  if(!list.length){
+    let msg;
+    if(mainTab==="saved") msg=emptyHTML("heart","No saved teas yet","Tap the heart on any tea to keep it here.",true);
+    else if(mainTab==="mine") msg=emptyHTML("pot","No teas of your own yet","Add a tea you love, with its own water temperature and steep times.",false);
+    else msg=`<p class="empty">No teas match that search. Try a type like oolong, or a flavor like honey.</p>`;
+    $("#grid").innerHTML = msg + (showAdd?addCardHTML:"");
+    return;
+  }
+  $("#grid").innerHTML=list.map(cardHTML).join("")+(showAdd?addCardHTML:"");
+}
+$("#grid").addEventListener("click",e=>{
+  const f=e.target.closest("[data-fav]");
+  if(f){const id=f.dataset.fav; favs.has(id)?favs.delete(id):favs.add(id); saveFavs();
+    f.setAttribute("aria-pressed",favs.has(id)); if(mainTab==="saved") renderGrid(); return;}
+  const go=e.target.closest("[data-go]"); if(go){ switchTab(go.dataset.go); return; }
+  if(e.target.closest("[data-add]")){ openForm(null,e.target.closest("[data-add]")); return; }
+  const o=e.target.closest("[data-open]"); if(o) openSheet(o.dataset.open,o);
+});
+$("#addBtn").addEventListener("click",e=>openForm(null,e.currentTarget));
+
+/* ================= Timer ================= */
+const C = 2*Math.PI*124, MC = 2*Math.PI*16;
+$("#ring").setAttribute("stroke-dasharray",C);
+/* The Timer tab gets its own copy of the timer card (ids prefixed with h-) */
+const hubTimer=$("#timer").cloneNode(true);
+hubTimer.querySelectorAll("[id]").forEach(e=>{e.id="h-"+e.id;});
+hubTimer.id="h-timer"; hubTimer.querySelector(".steeps").innerHTML="";
+$("#hubActive").insertBefore(hubTimer,$("#hubChange"));
+hubTimer.querySelector(".btns").after($("#hubChange"));
+const cupClone=document.getElementById("cupSrc").cloneNode(true);
+cupClone.removeAttribute("id");
+const cupLiq=cupClone.querySelector("#liquor"); if(cupLiq){ cupLiq.setAttribute("opacity",".8"); cupLiq.setAttribute("fill","#D9A441"); }
+cupClone.querySelectorAll("[id]").forEach(e=>e.removeAttribute("id"));
+$("#cupfig").appendChild(cupClone);
+const T = {tea:null, idx:0, dur:0, rem:0, running:false, done:false, endAt:0, raf:0, to:0};
+let view=null, viewIdx=0, lastFocus=null, tab="brew";
+const isMine=()=>!!(T.tea&&view&&T.tea.id===view.id);
+function activeTimer(){return !!T.tea && (T.running || T.done || T.rem < T.dur);}
+
+function adopt(tea, idx){ stopClock(); T.tea=tea; T.idx=idx; T.dur=tea.steeps[idx]; T.rem=T.dur; T.done=false; T.running=false; }
+function start(){
+  if(T.rem<=0){T.rem=T.dur;T.done=false;}
+  ensureAudio();
+  T.running=true; T.done=false; requestWake(); noteRecent(T.tea.id);
+  T.endAt=performance.now()+T.rem*1000;
+  clearTimeout(T.to); T.to=setTimeout(()=>{ if(T.running){T.rem=0; complete();} }, T.rem*1000+40);
+  tick();
+}
+function tick(){
+  if(!T.running) return;
+  T.rem=(T.endAt-performance.now())/1000;
+  if(T.rem<=0){T.rem=0; complete(); return;}
+  updateUI();
+  T.raf=requestAnimationFrame(tick);
+}
+function stopClock(){cancelAnimationFrame(T.raf); clearTimeout(T.to);}
+function pause(){ if(!T.running) return; T.rem=Math.max(0,(T.endAt-performance.now())/1000); T.running=false; stopClock(); releaseWake(); updateUI(); }
+function reset(){ stopClock(); releaseWake(); T.running=false; T.done=false; T.rem=T.dur; updateUI(); }
+function complete(){
+  if(T.done) return;
+  stopClock(); T.running=false; T.done=true; T.rem=0;
+  releaseWake(); chime(); petals();
+  if(navigator.vibrate) try{navigator.vibrate([120,80,120])}catch(e){}
+  flashTitle(`Your ${T.tea.name} is ready`);
+  updateUI();
+}
+
+function updateUI(){
+  updateMini();
+  if(mainTab==="timer") paintHub();
+  if(!view) return;
+  const mine=isMine();
+  const dur = mine ? T.dur : view.steeps[viewIdx];
+  const rem = mine ? T.rem : dur;
+  const running = mine && T.running, done = mine && T.done;
+  const idx = mine ? T.idx : viewIdx;
+  const p = dur ? Math.min(1,Math.max(0,1-rem/dur)) : 0;
+
+  $("#ring").setAttribute("stroke-dashoffset", C*(1-p));
+  const a=(-90+360*p)*Math.PI/180;
+  $("#bead").setAttribute("cx",150+124*Math.cos(a)); $("#bead").setAttribute("cy",150+124*Math.sin(a));
+  $("#digits").textContent = fmt(rem);
+  $("#dial").classList.toggle("is-running",running);
+  $("#timer").classList.toggle("is-done",done);
+
+  const total=view.steeps.length, hasNext=idx+1<total;
+  const verbing = view.action==="Whisk" ? "Whisking" : view.action==="Simmer" ? "Simmering" : "Steeping";
+  let status;
+  if(done) status = `Your ${view.name} is ready — pour and enjoy`;
+  else if(running) status = total>1 ? `${verbing}, ${ordinal(idx)} of ${total} steeps…` : `${verbing}…`;
+  else if(rem<dur) status = "Paused";
+  else status = total>1 ? `${ordinal(idx)} of ${total} steeps` : "Ready when you are";
+  $("#status").textContent=status;
+
+  const pb=$("#primary");
+  if(done) pb.textContent = hasNext ? `Start ${ordinal(idx+1)} steep` : (view.action==="Whisk"?"Whisk again":"Brew again");
+  else if(running) pb.textContent="Pause";
+  else if(rem<dur) pb.textContent="Resume";
+  else pb.textContent="Start";
+
+  $("#steeps").querySelectorAll(".steep").forEach((b,i)=>b.setAttribute("aria-pressed",i===idx));
+  const note=$("#note");
+  if(!mine && activeTimer()){note.hidden=false; note.textContent=`Your ${T.tea.name} timer is still going. Starting this one will stop it.`;}
+  else note.hidden=true;
+
+  $("#dockTime").textContent = done ? "Ready" : fmt(rem);
+  $("#dockLabel").textContent = done ? `${view.name} is ready` : running ? verbing+"…" : (rem<dur ? "Paused" : view.name);
+  $("#dockBtn").textContent = (done && hasNext) ? "Next steep" : pb.textContent;
+  $("#dockRing").setAttribute("stroke-dashoffset", MC*(1-p));
+}
+function paintHub(){
+  const t=T.tea; if(!t||$("#hubActive").hidden) return;
+  const dur=T.dur, rem=T.rem, running=T.running, done=T.done, idx=T.idx;
+  const p=dur?Math.min(1,Math.max(0,1-rem/dur)):0;
+  $("#h-ring").setAttribute("stroke-dashoffset",C*(1-p));
+  const a=(-90+360*p)*Math.PI/180;
+  $("#h-bead").setAttribute("cx",150+124*Math.cos(a)); $("#h-bead").setAttribute("cy",150+124*Math.sin(a));
+  $("#h-digits").textContent=fmt(rem);
+  $("#h-dial").classList.toggle("is-running",running);
+  $("#h-timer").classList.toggle("is-done",done);
+  const total=t.steeps.length, hasNext=idx+1<total;
+  const verbing=t.action==="Whisk"?"Whisking":t.action==="Simmer"?"Simmering":"Steeping";
+  let status;
+  if(done) status=`Your ${t.name} is ready — pour and enjoy`;
+  else if(running) status= total>1?`${verbing}, ${ordinal(idx)} of ${total} steeps…`:`${verbing}…`;
+  else if(rem<dur) status="Paused";
+  else status= total>1?`${ordinal(idx)} of ${total} steeps`:"Ready when you are";
+  $("#h-status").textContent=status;
+  $("#h-primary").textContent = done ? (hasNext?`Start ${ordinal(idx+1)} steep`:(t.action==="Whisk"?"Whisk again":"Brew again")) : running?"Pause":rem<dur?"Resume":"Start";
+  $("#h-steeps").querySelectorAll(".steep").forEach((b,i)=>b.setAttribute("aria-pressed",i===idx));
+  $("#hubChange").hidden = running; $("#hubBack").hidden = running;
+  $("#hubBack").textContent = (rem<dur && !done) ? "‹ Stop and go back" : "‹ Timer home";
+  $("#hubChange").textContent = (rem<dur && !done) ? "Stop and choose another tea" : "Choose a different tea";
+}
+function updateMini(){
+  const m=$("#mini");
+  updateTabBadge();
+  const show = activeTimer() && !isMine() && mainTab!=="timer";
+  m.classList.toggle("show",show); m.tabIndex = show?0:-1;
+  if(!T.tea) return;
+  $("#miniName").textContent=T.tea.name;
+  $("#miniTime").textContent = T.done ? "Ready" : fmt(T.rem);
+  m.classList.toggle("ready",T.done);
+  $("#miniRing").setAttribute("stroke-dashoffset", MC*(1-(T.dur?1-T.rem/T.dur:0)));
+}
+$("#mini").addEventListener("click",()=>{ if(T.tea) switchTab("timer"); });
+
+$("#primary").addEventListener("click",()=>{
+  if(!isMine()){ adopt(view,viewIdx); start(); return; }
+  if(T.done){ adopt(view, T.idx+1<view.steeps.length ? T.idx+1 : 0); start(); return; }
+  T.running ? pause() : start();
+});
+$("#reset").addEventListener("click",()=>{ if(isMine()) reset(); else {viewIdx=0; updateUI();} });
+$("#steeps").addEventListener("click",e=>{
+  const b=e.target.closest(".steep"); if(!b) return; const i=+b.dataset.i;
+  if(isMine()) adopt(view,i); else viewIdx=i;
+  updateUI();
+});
+$("#dockBtn").addEventListener("click",()=>$("#primary").click());
+
+/* ================= Tabs and the timer page ================= */
+const TABS=["teas","timer","saved","mine"];
+const POPULAR=["sencha","earl-grey","chamomile","tieguanyin","matcha","english-breakfast"];
+const PAGES={timer:["Timer","Your cup, steeped just right."],saved:["Saved teas","Your favorites, one tap away."],mine:["My teas","Teas you’ve added, with your own timings."]};
+let recent=load("lt-recent",[]); if(!Array.isArray(recent)) recent=[];
+function noteRecent(id){ recent=[id,...recent.filter(x=>x!==id)].slice(0,8); save("lt-recent",recent); }
+function quickList(){
+  const ids=[]; [...recent,...favs,...POPULAR].forEach(id=>{ if(!ids.includes(id)&&getTea(id)) ids.push(id); });
+  return ids.slice(0,6).map(getTea);
+}
+function renderHub(){
+  const t=T.tea;
+  $("#hubActive").hidden=!t; $("#hubEmpty").hidden=!!t;
+  if(t){
+    $("#hubName").textContent=t.name;
+    $("#hubSub").textContent=`${tempText(t)} · ${t.custom?CAT_LABEL[t.cat]:t.origin}`;
+    $("#h-dialArt").setAttribute("href","#"+artId(t));
+    $("#h-steeps").innerHTML = t.steeps.length>1 ? t.steeps.map((s,i)=>`<button type="button" class="steep" data-i="${i}" aria-pressed="false">${ordinal(i)} ${fmt(s)}</button>`).join("") : "";
+    paintHub();
+  } else {
+    $("#qbGrid").innerHTML=quickList().map(q=>`<button type="button" class="qb" data-qb="${q.id}"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#quatre"/><use href="#${artId(q)}" x="6" y="6" width="88" height="88" clip-path="url(#qclip)"/></svg><span class="qbt"><b>${esc(q.name)}</b><i>${tempText(q)} · ${fmt(q.steeps[0])}</i></span></button>`).join("");
+  }
+}
+$("#h-primary").addEventListener("click",()=>{
+  const t=T.tea; if(!t) return;
+  if(T.done){ adopt(t, T.idx+1<t.steeps.length ? T.idx+1 : 0); start(); return; }
+  T.running ? pause() : start();
+});
+$("#h-reset").addEventListener("click",()=>{ if(T.tea) reset(); });
+$("#h-steeps").addEventListener("click",e=>{
+  const b=e.target.closest(".steep"); if(!b||!T.tea) return;
+  adopt(T.tea,+b.dataset.i); updateUI();
+});
+$("#hubGuide").addEventListener("click",e=>{ if(T.tea) openSheet(T.tea.id,e.currentTarget); });
+function leaveBrew(){ stopClock(); releaseWake(); T.tea=null; T.running=false; T.done=false; renderHub(); updateMini(); window.scrollTo({top:0,behavior:"smooth"}); }
+$("#hubChange").addEventListener("click",leaveBrew);
+$("#hubBack").addEventListener("click",leaveBrew);
+$("#hubBrowse").addEventListener("click",()=>switchTab("teas"));
+$("#qbGrid").addEventListener("click",e=>{
+  const b=e.target.closest("[data-qb]"); if(!b) return;
+  const t=getTea(b.dataset.qb); if(!t) return;
+  adopt(t,0); renderHub(); updateUI();
+});
+function updateTabBadge(){
+  const b=document.querySelector('.tabitem[data-tab="timer"]'); if(!b) return;
+  const live=activeTimer();
+  const txt = live ? (T.done?"Ready":fmt(T.rem)) : "Timer";
+  const lab=b.querySelector(".tlab"); if(lab.textContent!==txt) lab.textContent=txt;
+  b.classList.toggle("live",live); b.classList.toggle("ready",live&&T.done);
+  const al = live ? (T.done?`Timer, ${T.tea.name} is ready`:`Timer, ${T.tea.name}, ${txt} left`) : "Timer";
+  if(b.getAttribute("aria-label")!==al) b.setAttribute("aria-label",al);
+}
+function switchTab(id){
+  if(!TABS.includes(id)) return;
+  if(id===mainTab){
+    if(id==="timer" && T.tea && !T.running && (T.done || T.rem>=T.dur)){ stopClock(); releaseWake(); T.tea=null; T.running=false; T.done=false; renderHub(); updateMini(); }
+    window.scrollTo({top:0,behavior:"smooth"}); return;
+  }
+  mainTab=id;
+  document.querySelectorAll(".tabitem").forEach(b=>{ if(b.dataset.tab===id) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
+  const pg=PAGES[id];
+  $("#pTeas").hidden = id!=="teas";
+  $("#pHead").hidden = id==="teas";
+  if(pg){ $("#pTitle").textContent=pg[0]; $("#pSub").textContent=pg[1]; }
+  $("#addBtn").hidden = id!=="mine";
+  $("#pTimer").hidden = id!=="timer";
+  if(id==="timer") renderHub();
+  renderGrid(); updateMini();
+  const w=$(".wrap"); w.classList.remove("swap"); void w.offsetWidth; w.classList.add("swap");
+  window.scrollTo({top:0});
+}
+$("#tabbar").addEventListener("click",e=>{ const b=e.target.closest(".tabitem"); if(b) switchTab(b.dataset.tab); });
+
+/* ================= Tea sheet ================= */
+function renderSheetStatic(){
+  const t=view;
+  $("#sheetTitle").textContent=t.name;
+  $("#sheetSub").textContent = t.custom ? `Your tea, ${CAT_LABEL[t.cat].toLowerCase()}` : (t.sub || `${t.native}, ${CAT_LABEL[t.cat].toLowerCase()} from ${t.origin}`);
+  $("#editBtn").hidden=!t.custom;
+  $("#dialArt").setAttribute("href","#"+artId(t));
+  $("#steeps").innerHTML = t.steeps.length>1 ? t.steeps.map((s,i)=>`<button type="button" class="steep" data-i="${i}" aria-pressed="false">${ordinal(i)} ${fmt(s)}</button>`).join("") : "";
+  $("#facts").innerHTML = [
+    [tempText(t),"Water","water"],
+    [t.leaf||LEAF[t.cat],"Leaf","leaf"],
+    [t.caffeine,"Caffeine",""]
+  ].map(([v,l,c])=>`<div class="fact ${c}"><b${c==="water"&&v.length>6?' class="long"':''}>${esc(v)}</b><span>${esc(l)}</span></div>`).join("");
+  $("#tab-enjoy").textContent = t.custom ? "My notes" : "Enjoy and pair";
+  $("#tab-story").hidden = !!t.custom;
+  if(t.custom && tab==="story") tab="brew";
+  renderPanel();
+}
+function renderPanel(){
+  const t=view; let h="";
+  if(tab==="brew"){
+    const steps = t.steps || [
+      `Heat fresh water to ${tempText(t)}.`,
+      `Warm your pot or cup, then add ${t.leaf||LEAF[t.cat]}.`,
+      ...(t.tips||[]),
+      `Steep for ${fmt(t.steeps[0])}, then strain completely so the leaves don’t keep brewing.`
+    ];
+    h+=`<h4>How to brew</h4><ol>${steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>`;
+    if(t.steeps.length>1) h+=`<h4>More steeps</h4><p>The same leaves give ${t.steeps.length} steeps: ${t.steeps.map(fmt).join(", ")}. Pick a steep above the timer.</p>`;
+    if(t.steps && t.tips) h+=`<h4>Tips</h4><ol>${t.tips.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>`;
+  } else if(tab==="enjoy"){
+    if(t.custom) h+= t.notes ? `<h4>My notes</h4><p>${esc(t.notes).replace(/\n/g,"<br>")}</p>` : `<p>No notes yet. Tap Edit to add how you like it, where it’s from or what you pair it with.</p>`;
+    else h+=`<h4>Tasting notes</h4><p>${esc(t.flavor)}</p><h4>How to enjoy</h4><p>${esc(t.enjoy)}</p><h4>Pairs well with</h4><div class="pairs">${t.pair.map(p=>`<span>${esc(p)}</span>`).join("")}</div>`;
+  } else {
+    h+=`<h4>Origin</h4><p>${esc(t.origin)}</p><h4>History and meaning</h4><p>${esc(t.story)}</p>`;
+  }
+  $("#panel").innerHTML=h;
+  $("#panel").setAttribute("aria-labelledby","tab-"+tab);
+  document.querySelectorAll(".tab").forEach(x=>{const on=x.dataset.tab===tab;x.setAttribute("aria-selected",on);x.tabIndex=on?0:-1;});
+}
+document.querySelector(".tabs").addEventListener("click",e=>{ const b=e.target.closest(".tab"); if(b){tab=b.dataset.tab;renderPanel();} });
+document.querySelector(".tabs").addEventListener("keydown",e=>{
+  if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft") return;
+  const tabs=[...document.querySelectorAll(".tab")].filter(x=>!x.hidden); let i=tabs.findIndex(x=>x.dataset.tab===tab);
+  i=(i+(e.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length; tab=tabs[i].dataset.tab; renderPanel(); tabs[i].focus();
+});
+
+let openEl=null;
+function showSheet(el){
+  const sc=$("#scrim");
+  if(openEl&&openEl!==el){ openEl.classList.remove("show"); openEl.hidden=true; }
+  el.hidden=false; sc.hidden=false; el.scrollTop=0;
+  document.body.style.overflow="hidden";
+  requestAnimationFrame(()=>{el.classList.add("show");sc.classList.add("show");});
+  openEl=el;
+}
+function hideSheet(){
+  const el=openEl; if(!el) return;
+  el.classList.remove("show"); $("#scrim").classList.remove("show");
+  openEl=null; document.body.style.overflow="";
+  setTimeout(()=>{ if(openEl!==el) el.hidden=true; if(!openEl) $("#scrim").hidden=true; },450);
+}
+function openSheet(id,from){
+  const t=getTea(id); if(!t) return;
+  view=t; viewIdx = isMine()?T.idx:0;
+  if(from) lastFocus=from;
+  tab="brew";
+  renderSheetStatic(); updateUI();
+  showSheet($("#sheet"));
+  setTimeout(()=>$("#close").focus({preventScroll:true}),60);
+}
+function closeSheet(){
+  view=null; hideSheet(); updateMini();
+  if(lastFocus && document.body.contains(lastFocus)) lastFocus.focus({preventScroll:true});
+}
+$("#close").addEventListener("click",closeSheet);
+$("#editBtn").addEventListener("click",()=>{ if(view&&view.custom) openForm(view,null,view.id); });
+$("#scrim").addEventListener("click",()=>{ openEl===$("#formSheet") ? closeForm() : closeSheet(); });
+document.addEventListener("keydown",e=>{
+  if(!openEl) return;
+  if(e.key==="Escape"){ openEl===$("#formSheet") ? closeForm() : closeSheet(); }
+  if(e.key==="Tab"){
+    const f=[...openEl.querySelectorAll("button,input,textarea,[tabindex='0']")].filter(x=>!x.disabled&&x.tabIndex>=0&&x.offsetParent!==null);
+    if(!f.length) return; const first=f[0], last=f[f.length-1];
+    if(e.shiftKey && document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first.focus();}
+  }
+});
+
+/* ================= Add / edit form ================= */
+let formEdit=null, formCat="green", formReturn=null, tempDirty=false, steepDirty=false, delArmed=0;
+const fSteeps=$("#fSteeps");
+function renderTypePick(){
+  $("#fType").innerHTML=TYPES.map(c=>`<button type="button" role="radio" data-type="${c}" aria-checked="${c===formCat}" tabindex="${c===formCat?0:-1}"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#m-${c}"/></svg>${TYPE_SHORT[c]}</button>`).join("");
+  $("#formArt").setAttribute("href","#m-"+formCat);
+}
+function steepRow(sec,i){
+  const m=Math.floor(sec/60), s=sec%60;
+  return `<div class="steeprow"><span class="lbl">${ordinal(i)}</span>
+    <input type="number" inputmode="numeric" min="0" max="30" class="mm" value="${m}" aria-label="${ordinal(i)} steep minutes"><span class="u">min</span>
+    <input type="number" inputmode="numeric" min="0" max="59" step="5" class="ss" value="${s}" aria-label="${ordinal(i)} steep seconds"><span class="u">sec</span>
+    ${i>0?`<button type="button" class="rm" data-rm="${i}" aria-label="Remove ${ordinal(i)} steep"><svg><use href="#i-x"/></svg></button>`:""}</div>`;
+}
+function readSteeps(){ return [...fSteeps.querySelectorAll(".steeprow")].map(r=>{
+  const m=parseInt(r.querySelector(".mm").value,10)||0, s=parseInt(r.querySelector(".ss").value,10)||0; return m*60+s; }); }
+function renderSteeps(arr){ fSteeps.innerHTML=arr.map(steepRow).join(""); $("#fAddSteep").hidden = arr.length>=8; }
+function openForm(edit,from,returnTo=null){
+  formEdit=edit; formReturn=returnTo; if(from) lastFocus=from;
+  formCat = edit ? edit.cat : "green";
+  tempDirty=!!edit; steepDirty=!!edit; delArmed=0;
+  $("#formTitle").textContent = edit ? "Edit tea" : "Add your own tea";
+  $("#formSub").textContent = edit ? "Changes show up everywhere you use Little Teahouse." : "Set it up once and the timer remembers it.";
+  $("#fName").value = edit ? edit.name : "";
+  $("#fUnit").textContent = unit==="C"?"°C":"°F";
+  const tc = edit ? edit.temp : CAT_DEFAULT[formCat].t;
+  $("#fTemp").value = unit==="C" ? tc : toF(tc);
+  $("#fTemp").min = unit==="C"?40:104; $("#fTemp").max = unit==="C"?100:212;
+  renderSteeps(edit ? edit.steeps : [CAT_DEFAULT[formCat].s]);
+  $("#fLeaf").value = edit ? edit.leaf : ""; $("#fLeaf").placeholder = LEAF[formCat];
+  $("#fNotes").value = edit ? edit.notes : "";
+  $("#fErr").textContent=""; $("#fDelete").hidden=!edit; $("#fDelete").textContent="Delete";
+  $("#fSave").textContent = edit ? "Save changes" : "Save tea";
+  renderTypePick();
+  if(view && openEl===$("#sheet")) view=null;
+  showSheet($("#formSheet"));
+  setTimeout(()=>$("#formClose").focus({preventScroll:true}),60);
+}
+function closeForm(){
+  hideSheet();
+  if(formReturn){ const id=formReturn; formReturn=null; setTimeout(()=>openSheet(id,null),20); }
+  else if(lastFocus && document.body.contains(lastFocus)) lastFocus.focus({preventScroll:true});
+}
+$("#formClose").addEventListener("click",closeForm);
+$("#fType").addEventListener("click",e=>{
+  const b=e.target.closest("[data-type]"); if(!b) return; formCat=b.dataset.type; renderTypePick();
+  $("#fType").querySelector(`[data-type="${formCat}"]`).focus();
+  if(!formEdit){
+    if(!tempDirty){ const tc=CAT_DEFAULT[formCat].t; $("#fTemp").value = unit==="C"?tc:toF(tc); }
+    if(!steepDirty) renderSteeps([CAT_DEFAULT[formCat].s]);
+  }
+  $("#fLeaf").placeholder = LEAF[formCat];
+});
+$("#fType").addEventListener("keydown",e=>{
+  if(!["ArrowRight","ArrowLeft","ArrowDown","ArrowUp"].includes(e.key)) return; e.preventDefault();
+  let i=TYPES.indexOf(formCat); i=(i+(e.key==="ArrowRight"||e.key==="ArrowDown"?1:-1)+TYPES.length)%TYPES.length;
+  $("#fType").querySelector(`[data-type="${TYPES[i]}"]`).click();
+});
+$("#fTemp").addEventListener("input",()=>tempDirty=true);
+fSteeps.addEventListener("input",()=>steepDirty=true);
+fSteeps.addEventListener("click",e=>{
+  const r=e.target.closest("[data-rm]"); if(!r) return; const arr=readSteeps(); arr.splice(+r.dataset.rm,1); steepDirty=true; renderSteeps(arr);
+});
+$("#fAddSteep").addEventListener("click",()=>{
+  const arr=readSteeps(); if(arr.length>=8) return; arr.push(Math.min(1800,(arr[arr.length-1]||60)+30)); steepDirty=true; renderSteeps(arr);
+  const rows=fSteeps.querySelectorAll(".mm"); rows[rows.length-1].focus();
+});
+$("#fDelete").addEventListener("click",()=>{
+  if(!formEdit) return;
+  if(Date.now()-delArmed>3500){ delArmed=Date.now(); $("#fDelete").textContent="Tap again to delete"; setTimeout(()=>{ if(Date.now()-delArmed>=3400) $("#fDelete").textContent="Delete"; },3500); return; }
+  const id=formEdit.id;
+  customs=customs.filter(c=>c.id!==id); favs.delete(id); persistLocal(); dbDelete(id); saveFavs();
+  if(T.tea&&T.tea.id===id){ stopClock(); releaseWake(); T.tea=null; T.running=false; T.done=false; if(mainTab==="timer") renderHub(); }
+  formReturn=null; formEdit=null; hideSheet(); renderGrid(); updateMini();
+});
+$("#teaForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const err=$("#fErr");
+  const name=$("#fName").value.trim();
+  if(!name){ err.textContent="Give your tea a name."; $("#fName").focus(); return; }
+  const raw=parseFloat($("#fTemp").value);
+  const lo=unit==="C"?40:104, hi=unit==="C"?100:212;
+  if(!isFinite(raw)||raw<lo||raw>hi){ err.textContent=`Water temperature should be between ${lo} and ${hi}${unit==="C"?"°C":"°F"}.`; $("#fTemp").focus(); return; }
+  const tempC = unit==="C" ? Math.round(raw) : Math.round((raw-32)*5/9);
+  const steeps=readSteeps();
+  const bad=steeps.findIndex(s=>s<=0||s>1800);
+  if(bad>-1){ err.textContent=`Set the ${ordinal(bad)} steep to between 0:05 and 30:00.`; fSteeps.querySelectorAll(".mm")[bad].focus(); return; }
+  err.textContent="";
+  const id = formEdit ? formEdit.id : "tea_"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  const obj = {id,name,cat:formCat,temp:tempC,steeps,leaf:$("#fLeaf").value.trim(),notes:$("#fNotes").value.trim(),created:formEdit?formEdit.created:Date.now()};
+  const t = sanitize(obj); if(!t){ err.textContent="That tea couldn’t be saved. Check the name and try again."; return; }
+  customs = [t, ...customs.filter(c=>c.id!==id)].sort((a,b)=>(b.created||0)-(a.created||0));
+  persistLocal(); dbWrite(id,plain(t));
+  if(T.tea&&T.tea.id===id&&!T.running){ T.tea=null; T.done=false; if(mainTab==="timer") renderHub(); }
+  formEdit=null; formReturn=id;
+  if(cat!=="all"&&cat!=="mine"&&cat!==t.cat){ cat="all"; chipsEl.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x.dataset.cat==="all")); }
+  renderGrid(); closeForm();
+});
+
+/* ================= Chime, petals, title ================= */
+let actx=null;
+function ensureAudio(){ try{ if(!actx){const A=window.AudioContext||window.webkitAudioContext; if(A) actx=new A();} if(actx&&actx.state==="suspended") actx.resume(); }catch(e){} }
+function bell(freq,at,dur,vol){
+  const o=actx.createOscillator(), g=actx.createGain();
+  o.type="sine"; o.frequency.value=freq;
+  g.gain.setValueAtTime(0.0001,at); g.gain.exponentialRampToValueAtTime(vol,at+0.02); g.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  o.connect(g).connect(actx.destination); o.start(at); o.stop(at+dur+0.05);
+}
+function chime(){
+  if(!actx) return;
+  try{ const n=actx.currentTime+0.05;
+    [[1046.5,0],[1318.5,0.32],[1568,0.64],[1318.5,1.4],[1568,1.72]].forEach(([f,d])=>{ bell(f,n+d,1.8,0.16); bell(f*2.01,n+d,0.9,0.03); });
+  }catch(e){}
+}
+function petals(){
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  for(let i=0;i<22;i++){
+    const p=document.createElement("span"); p.className="petal"; const s=8+Math.random()*10;
+    p.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;animation-duration:${4+Math.random()*3}s;animation-delay:${Math.random()*1.4}s;--dx:${(Math.random()*160-80)}px;--rot:${Math.random()*540-270}deg`;
+    document.body.appendChild(p); setTimeout(()=>p.remove(),9000);
+  }
+}
+const baseTitle=document.title; let flashT=0;
+function flashTitle(msg){
+  clearInterval(flashT); if(!document.hidden){document.title=baseTitle;return;}
+  let on=false; flashT=setInterval(()=>{document.title=(on=!on)?"✿ "+msg:baseTitle;},1100);
+}
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden){clearInterval(flashT);document.title=baseTitle; if(T.running){tick();requestWake();}}
+});
+
+/* ================= Screen wake, dock, swipe ================= */
+let wake=null;
+async function requestWake(){ try{ if("wakeLock" in navigator && !wake){ wake=await navigator.wakeLock.request("screen"); wake.addEventListener("release",()=>{wake=null;}); } }catch(e){ wake=null; } }
+function releaseWake(){ try{ if(wake) wake.release(); }catch(e){} wake=null; }
+
+if("IntersectionObserver" in window){
+  const io=new IntersectionObserver(([e])=>{
+    const show=!!view && !e.isIntersecting;
+    const d=$("#dock"); d.classList.toggle("show",show); d.setAttribute("aria-hidden",!show); $("#dockBtn").tabIndex=show?0:-1;
+  },{root:$("#sheet"),threshold:0});
+  io.observe($("#sheet .btns"));
+}
+
+function swipeable(sheet,onClose){
+  let sy=null, dy=0;
+  const ts=e=>{ if(sheet.scrollTop>0) return; sy=e.touches[0].clientY; dy=0; sheet.style.transition="none"; };
+  const tm=e=>{ if(sy===null) return; dy=Math.max(0,e.touches[0].clientY-sy); sheet.style.transform=`translate(-50%,${dy}px)`; };
+  const te=()=>{ if(sy===null) return; sy=null; sheet.style.transition="";
+    if(dy>100){ sheet.style.transform="translate(-50%,104%)"; onClose(); setTimeout(()=>{sheet.style.transform="";},470); }
+    else sheet.style.transform=""; };
+  [sheet.querySelector(".grab"),sheet.querySelector(".sheet-head")].forEach(el=>{
+    el.addEventListener("touchstart",ts,{passive:true}); el.addEventListener("touchmove",tm,{passive:true});
+    el.addEventListener("touchend",te); el.addEventListener("touchcancel",te);
+  });
+}
+swipeable($("#sheet"),closeSheet);
+swipeable($("#formSheet"),closeForm);
+
+renderGrid(); updateMini(); initStore();
+</script>
+</body>
+</html>
